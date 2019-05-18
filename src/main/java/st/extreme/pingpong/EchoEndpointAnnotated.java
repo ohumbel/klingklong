@@ -1,5 +1,8 @@
 package st.extreme.pingpong;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import javax.websocket.OnMessage;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
@@ -8,6 +11,19 @@ import javax.websocket.server.ServerEndpoint;
 public class EchoEndpointAnnotated {
   @OnMessage
   public String onMessage(String message, Session session) {
+    System.out.println("Server onMessage: >" + message + "<");
+    try {
+      TimeUnit.SECONDS.sleep(2);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    System.out.println("Server sending message: >" + message + "<");
+    try {
+      session.getBasicRemote().sendText(message);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    System.out.println("Server onMessage return message: >" + message + "<");
     return message;
   }
 }
