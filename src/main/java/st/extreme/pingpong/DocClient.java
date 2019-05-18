@@ -19,7 +19,7 @@ public class DocClient {
 
   public static void main(String[] args) {
     try {
-      messageLatch = new CountDownLatch(1);
+      messageLatch = new CountDownLatch(2);
 
       final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
 
@@ -33,9 +33,19 @@ public class DocClient {
               @Override
               public void onMessage(String message) {
                 System.out.println("Received message: " + message);
+                try {
+                  TimeUnit.SECONDS.sleep(2);
+                  if (messageLatch.getCount() > 1) {
+                    System.out.println("Client sending message again");
+                    session.getBasicRemote().sendText(SENT_MESSAGE);
+                  }
+                } catch (IOException | InterruptedException e) {
+                  e.printStackTrace();
+                }
                 messageLatch.countDown();
               }
             });
+            System.out.println("Client initially sending message");
             session.getBasicRemote().sendText(SENT_MESSAGE);
           } catch (IOException e) {
             e.printStackTrace();
