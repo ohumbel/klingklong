@@ -12,7 +12,7 @@ public class DocServer {
   }
 
   public static void runServer() {
-    Server server = new Server("localhost", 8025, "/websockets", null, EchoEndpointProgrammatic.class);
+    Server server = new Server("localhost", 8025, "/websockets", null, EchoEndpointAnnotated.class);
     try {
       server.start();
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
