@@ -10,7 +10,7 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/echo")
 public class EchoEndpointAnnotated {
   @OnMessage
-  public String onMessage(String message, Session session) {
+  public void onMessage(String message, Session session) {
     System.out.println("Server onMessage: >" + message + "<");
     try {
       TimeUnit.SECONDS.sleep(2);
@@ -23,7 +23,5 @@ public class EchoEndpointAnnotated {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    System.out.println("Server onMessage return message: >" + message + "<");
-    return message;
   }
 }
