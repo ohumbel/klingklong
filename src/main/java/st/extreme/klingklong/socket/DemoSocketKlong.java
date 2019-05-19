@@ -15,39 +15,37 @@ public class DemoSocketKlong {
   protected static final int DEFAULT_KLONG_PORT = 8539;
 
   public static void main(String[] args) {
-    // step 1: listen on kling port
-    int listeningPortNumber = DemoSocketKling.DEFAUT_KLING_PORT;
+    new Receiver().run();
+  }
 
-    System.out.println("starting to listen on port " + listeningPortNumber);
-    try (ServerSocket serverSocket = new ServerSocket(listeningPortNumber);
-        Socket listeningSocket = serverSocket.accept();
-        // PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(listeningSocket.getInputStream()));) {
+  private static final class Receiver extends Thread {
+    @Override
+    public void run() {
+      // listen on kling port
+      int listeningPortNumber = DemoSocketKling.DEFAUT_KLING_PORT;
 
-      String inputLine, outputLine;
+      System.out.println("klong is starting to listen on port " + listeningPortNumber);
+      try (ServerSocket serverSocket = new ServerSocket(listeningPortNumber);
+          Socket listeningSocket = serverSocket.accept();
+          BufferedReader in = new BufferedReader(new InputStreamReader(listeningSocket.getInputStream()));) {
+        String inputLine;
 
-      // Initiate conversation with client
-      // KnockKnockProtocol kkp = new KnockKnockProtocol();
-      // outputLine = kkp.processInput(null);
-      outputLine = "";
-      // out.println(outputLine);
+        System.out.println("waiting for data...");
+        while ((inputLine = in.readLine()) != null) {
+          System.out.println("got " + inputLine);
+          if ("bye".equals(inputLine))
+            break;
+        }
 
-      System.out.println("waiting for data...");
-      while ((inputLine = in.readLine()) != null) {
-        System.out.println("got " + inputLine);
-        // outputLine = kkp.processInput(inputLine);
-        // out.println(outputLine);
-        if (inputLine.equals("bye"))
-          break;
+        System.out.println("closing in 2 seconds");
+        TimeUnit.SECONDS.sleep(2);
+      } catch (IOException e) {
+        System.out.println("Exception caught when trying to listen on port " + listeningPortNumber + " or listening for a connection");
+        System.out.println(e.getMessage());
+        e.printStackTrace();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
-
-      System.out.println("closing in 2 seconds");
-      TimeUnit.SECONDS.sleep(2);
-    } catch (IOException e) {
-      System.out.println("Exception caught when trying to listen on port " + listeningPortNumber + " or listening for a connection");
-      System.out.println(e.getMessage());
-    } catch (InterruptedException e) {
-      e.printStackTrace();
     }
   }
 
