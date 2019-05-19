@@ -7,6 +7,9 @@ import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 final class Sender extends Thread {
+
+  static final String STOP_SENDING_SIGNAL = "__sStopP^ !@#$%^&*() ^sSenNdiNngG__";
+
   private final String ourName;
   private final String remoteHostName;
   private final int sendingPort;
@@ -33,9 +36,8 @@ final class Sender extends Thread {
       out.println(Message.forSending(msg));
 
       TimeUnit.SECONDS.sleep(2);
-      msg = "bye";
-      System.out.println("sending " + msg);
-      out.println(Message.forSending(msg));
+      System.out.println("sending <STOP> signal");
+      out.println(Message.forSending(STOP_SENDING_SIGNAL));
 
       System.out.println(ourName + " sender stops sending in 2 seconds");
       TimeUnit.SECONDS.sleep(2);

@@ -27,9 +27,12 @@ final class Receiver extends Thread {
       System.out.println("waiting for data...");
       while ((inputLine = in.readLine()) != null) {
         String msg = Message.afterReceiving(inputLine);
-        System.out.println("got " + msg);
-        if ("bye".equals(msg))
+        if (Sender.STOP_SENDING_SIGNAL.equals(msg)) {
+          System.out.println("got <STOP> signal from remote");
           break;
+        } else {
+          System.out.println("got " + msg);
+        }
       }
 
       System.out.println(ourName + " receiver is closing in 2 seconds");
