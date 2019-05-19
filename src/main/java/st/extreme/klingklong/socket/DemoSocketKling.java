@@ -13,20 +13,31 @@ public class DemoSocketKling {
 
   protected static final int DEFAUT_KLING_PORT = 8533;
 
+  private static final String KLING = "Kling";
+
   public static void main(String[] args) {
-    new Sender().run();
+    Sender sender = new Sender(KLING, "localhost", DEFAUT_KLING_PORT);
+    sender.run();
   }
 
   private static final class Sender extends Thread {
+    private final String ourName;
+    private final String remoteHostName;
+    private final int sendingPort;
+
+    public Sender(String ourName, String remoteHostName, int sendingPort) {
+      this.ourName = ourName;
+      this.remoteHostName = remoteHostName;
+      this.sendingPort = sendingPort;
+    }
+
     @Override
     public void run() {
-      String remoteHostName = "localhost";
-      int sendingPort = DEFAUT_KLING_PORT;
-      System.out.println("kling is creating a sending socket on port " + sendingPort);
-      try (Socket sendingSocket = waitForRemoteAcceptance(remoteHostName, sendingPort);
-          PrintWriter out = new PrintWriter(sendingSocket.getOutputStream(), true);) {
+      System.out.println(ourName + " is creating a sending socket on port " + sendingPort);
+      try (Socket sendingSocket = waitForRemoteAcceptance(); //
+          PrintWriter out = new PrintWriter(sendingSocket.getOutputStream(), true)) {
         TimeUnit.SECONDS.sleep(2);
-        String msg = "a message from kling";
+        String msg = "a message from " + ourName;
         System.out.println("sending " + msg);
         out.println(msg);
 
@@ -35,7 +46,7 @@ public class DemoSocketKling {
         System.out.println("sending " + msg);
         out.println(msg);
 
-        System.out.println("stop sending in 2 seconds");
+        System.out.println(ourName + " sender stops sending in 2 seconds");
         TimeUnit.SECONDS.sleep(2);
       } catch (UnknownHostException e) {
         System.err.println("Don't know about host " + remoteHostName);
@@ -48,7 +59,7 @@ public class DemoSocketKling {
       }
     }
 
-    private Socket waitForRemoteAcceptance(String remoteHostName, int sendingPort) throws UnknownHostException {
+    private Socket waitForRemoteAcceptance() throws UnknownHostException {
       Socket sendingSocket = null;
       int secondsWaited = 0;
       while (sendingSocket == null) {
@@ -58,7 +69,7 @@ public class DemoSocketKling {
           // remote not ready yet, wait a bit
           try {
             if (secondsWaited % 5 == 0) {
-              System.out.println("kling is waiting for klong to accept a connection");
+              System.out.println(ourName + " is waiting for " + remoteHostName + "/" + sendingPort + " to accept a connection");
             }
             TimeUnit.SECONDS.sleep(1);
             secondsWaited++;
