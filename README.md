@@ -1,4 +1,6 @@
 # klingklong
-Message ping pong between two JVM processes using (web) sockets
+Message ping pong between two JVM processes using sockets
 
-This is highly experimental and work is in progress
+This is highly experimental and work is in progress.
+
+Web sockets are considered as overengeneering for this purpose. But if you are interested in a small demo use the `DocServer` and `DocClient` on the `web.socket.demo` branch for reference.
