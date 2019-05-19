@@ -1,4 +1,4 @@
-package st.extreme.pingpong;
+package st.extreme.klingklong;
 
 import java.io.IOException;
 
