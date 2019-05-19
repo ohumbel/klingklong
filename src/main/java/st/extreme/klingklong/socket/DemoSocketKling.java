@@ -23,7 +23,7 @@ public class DemoSocketKling {
       String remoteHostName = "localhost";
       int sendingPort = DEFAUT_KLING_PORT;
       System.out.println("kling is creating a sending socket on port " + sendingPort);
-      try (Socket sendingSocket = new Socket(remoteHostName, sendingPort);
+      try (Socket sendingSocket = waitForRemoteAcceptance(remoteHostName, sendingPort);
           PrintWriter out = new PrintWriter(sendingSocket.getOutputStream(), true);) {
         TimeUnit.SECONDS.sleep(2);
         String msg = "a message from kling";
@@ -47,5 +47,28 @@ public class DemoSocketKling {
         e.printStackTrace();
       }
     }
+
+    private Socket waitForRemoteAcceptance(String remoteHostName, int sendingPort) throws UnknownHostException {
+      Socket sendingSocket = null;
+      int secondsWaited = 0;
+      while (sendingSocket == null) {
+        try { // do not use Autoclosable here
+          sendingSocket = new Socket(remoteHostName, sendingPort);
+        } catch (IOException ioe) {
+          // remote not ready yet, wait a bit
+          try {
+            if (secondsWaited % 5 == 0) {
+              System.out.println("kling is waiting for klong to accept a connection");
+            }
+            TimeUnit.SECONDS.sleep(1);
+            secondsWaited++;
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+      return sendingSocket;
+    }
   }
+
 }
