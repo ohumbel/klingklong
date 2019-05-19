@@ -25,12 +25,17 @@ final class Sender extends Thread {
       TimeUnit.SECONDS.sleep(2);
       String msg = "a message from " + ourName;
       System.out.println("sending " + msg);
-      out.println(msg);
+      out.println(Message.forSending(msg));
+
+      TimeUnit.SECONDS.sleep(2);
+      msg = "a message from " + ourName + "\n\t.. on two lines";
+      System.out.println("sending " + msg);
+      out.println(Message.forSending(msg));
 
       TimeUnit.SECONDS.sleep(2);
       msg = "bye";
       System.out.println("sending " + msg);
-      out.println(msg);
+      out.println(Message.forSending(msg));
 
       System.out.println(ourName + " sender stops sending in 2 seconds");
       TimeUnit.SECONDS.sleep(2);

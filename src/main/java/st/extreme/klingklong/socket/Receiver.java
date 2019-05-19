@@ -26,8 +26,9 @@ final class Receiver extends Thread {
 
       System.out.println("waiting for data...");
       while ((inputLine = in.readLine()) != null) {
-        System.out.println("got " + inputLine);
-        if ("bye".equals(inputLine))
+        String msg = Message.afterReceiving(inputLine);
+        System.out.println("got " + msg);
+        if ("bye".equals(msg))
           break;
       }
 
