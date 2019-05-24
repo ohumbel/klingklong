@@ -57,7 +57,7 @@ final public class Sender extends Thread {
     Socket sendingSocket = null;
     int secondsWaited = 0;
     while (sendingSocket == null) {
-      try { // do not use Autoclosable here
+      try { // do not use AutoCloseable here
         sendingSocket = new Socket(remoteHost, sendingPort);
       } catch (IOException ioe) {
         // remote not ready yet, wait a bit

@@ -2,6 +2,8 @@ package st.extreme.klingklong;
 
 /**
  * The interface for an endpoint
+ * <p>
+ * Since an endpoint is {@code AutoCloseable}, it is mandatory to use it in a {@code try} with resources block.
  */
 public interface Klingklong extends AutoCloseable {
 
