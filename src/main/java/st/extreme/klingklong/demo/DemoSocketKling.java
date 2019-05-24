@@ -1,10 +1,7 @@
-package st.extreme.klingklong.socket;
+package st.extreme.klingklong.demo;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import st.extreme.klingklong.Receiver;
-import st.extreme.klingklong.Sender;
 
 /**
  * Listens on klong port, sends on kling port
@@ -15,9 +12,9 @@ public class DemoSocketKling {
 
   public static void main(String[] args) {
     try {
-      Receiver receiver = new Receiver(DemoSocketKlong.DEFAULT_KLONG_PORT);
+      DemoReceiver receiver = new DemoReceiver(DemoSocketKlong.DEFAULT_KLONG_PORT);
       receiver.start();
-      Sender sender = new Sender(InetAddress.getLocalHost(), DEFAUT_KLING_PORT);
+      DemoSender sender = new DemoSender(InetAddress.getLocalHost(), DEFAUT_KLING_PORT);
       sender.start();
     } catch (UnknownHostException e) {
       e.printStackTrace();

@@ -3,7 +3,7 @@ package st.extreme.klingklong;
 import java.nio.charset.Charset;
 import java.util.Base64;
 
-final class Message {
+final public class Message {
 
   private static final Charset UTF_8 = Charset.forName("UTF-8");
 

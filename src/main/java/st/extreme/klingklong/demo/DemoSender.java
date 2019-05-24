@@ -1,4 +1,4 @@
-package st.extreme.klingklong;
+package st.extreme.klingklong.demo;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -7,7 +7,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-final public class Sender extends Thread {
+import st.extreme.klingklong.Message;
+
+final public class DemoSender extends Thread {
 
   static final String STOP_SENDING_SIGNAL = "__sStopP^ !@#$%^&*() ^sSenNdiNngG__";
 
@@ -15,7 +17,7 @@ final public class Sender extends Thread {
   private final InetAddress remoteHost;
   private final int sendingPort;
 
-  public Sender(InetAddress remoteHost, int sendingPort) throws UnknownHostException {
+  public DemoSender(InetAddress remoteHost, int sendingPort) throws UnknownHostException {
     this.ourName = InetAddress.getLocalHost().getHostName();
     this.remoteHost = remoteHost;
     this.sendingPort = sendingPort;

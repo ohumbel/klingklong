@@ -1,4 +1,4 @@
-package st.extreme.klingklong;
+package st.extreme.klingklong.demo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,11 +9,13 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-final public class Receiver extends Thread {
+import st.extreme.klingklong.Message;
+
+final  class DemoReceiver extends Thread {
   private final String ourName;
   private final int listeningPort;
 
-  public Receiver(int listeningPort) throws UnknownHostException {
+  public DemoReceiver(int listeningPort) throws UnknownHostException {
     this.ourName = InetAddress.getLocalHost().getHostName();
     this.listeningPort = listeningPort;
   }
@@ -29,7 +31,7 @@ final public class Receiver extends Thread {
       System.out.println("waiting for data...");
       while ((inputLine = in.readLine()) != null) {
         String msg = Message.afterReceiving(inputLine);
-        if (Sender.STOP_SENDING_SIGNAL.equals(msg)) {
+        if (DemoSender.STOP_SENDING_SIGNAL.equals(msg)) {
           System.out.println("got <STOP> signal from remote");
           break;
         } else {
