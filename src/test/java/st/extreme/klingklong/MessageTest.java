@@ -1,8 +1,10 @@
-package st.extreme.klingklong.socket;
+package st.extreme.klingklong;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import st.extreme.klingklong.Message;
 
 public class MessageTest {
 

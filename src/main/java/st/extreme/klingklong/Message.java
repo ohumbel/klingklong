@@ -1,4 +1,4 @@
-package st.extreme.klingklong.socket;
+package st.extreme.klingklong;
 
 import java.nio.charset.Charset;
 import java.util.Base64;

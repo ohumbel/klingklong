@@ -1,18 +1,20 @@
-package st.extreme.klingklong.socket;
+package st.extreme.klingklong;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-final class Receiver extends Thread {
+final public class Receiver extends Thread {
   private final String ourName;
   private final int listeningPort;
 
-  public Receiver(String ourName, int listeningPort) {
-    this.ourName = ourName;
+  public Receiver(int listeningPort) throws UnknownHostException {
+    this.ourName = InetAddress.getLocalHost().getHostName();
     this.listeningPort = listeningPort;
   }
 

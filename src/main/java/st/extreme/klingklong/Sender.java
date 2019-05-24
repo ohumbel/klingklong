@@ -1,22 +1,23 @@
-package st.extreme.klingklong.socket;
+package st.extreme.klingklong;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-final class Sender extends Thread {
+final public class Sender extends Thread {
 
   static final String STOP_SENDING_SIGNAL = "__sStopP^ !@#$%^&*() ^sSenNdiNngG__";
 
   private final String ourName;
-  private final String remoteHostName;
+  private final InetAddress remoteHost;
   private final int sendingPort;
 
-  public Sender(String ourName, String remoteHostName, int sendingPort) {
-    this.ourName = ourName;
-    this.remoteHostName = remoteHostName;
+  public Sender(InetAddress remoteHost, int sendingPort) throws UnknownHostException {
+    this.ourName = InetAddress.getLocalHost().getHostName();
+    this.remoteHost = remoteHost;
     this.sendingPort = sendingPort;
   }
 
@@ -42,10 +43,10 @@ final class Sender extends Thread {
       System.out.println(ourName + " sender stops sending in 2 seconds");
       TimeUnit.SECONDS.sleep(2);
     } catch (UnknownHostException e) {
-      System.err.println("Don't know about host " + remoteHostName);
+      System.err.println("Don't know about host " + remoteHost.getHostName());
       e.printStackTrace();
     } catch (IOException e) {
-      System.err.println("Couldn't get I/O for the connection to " + remoteHostName);
+      System.err.println("Couldn't get I/O for the connection to " + remoteHost.getHostName());
       e.printStackTrace();
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -57,12 +58,13 @@ final class Sender extends Thread {
     int secondsWaited = 0;
     while (sendingSocket == null) {
       try { // do not use Autoclosable here
-        sendingSocket = new Socket(remoteHostName, sendingPort);
+        sendingSocket = new Socket(remoteHost, sendingPort);
       } catch (IOException ioe) {
         // remote not ready yet, wait a bit
         try {
           if (secondsWaited % 5 == 0) {
-            System.out.println(ourName + " is waiting for " + remoteHostName + "/" + sendingPort + " to accept a connection");
+            System.out
+                .println(ourName + " is waiting for remote " + remoteHost.getHostName() + "/" + sendingPort + " to accept a connection");
           }
           TimeUnit.SECONDS.sleep(1);
           secondsWaited++;
