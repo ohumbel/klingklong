@@ -1,5 +1,6 @@
 package st.extreme.klingklong.demo;
 
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,7 +48,7 @@ public class JVMWorker implements MessageListener {
     }
   }
 
-  private Klingklong createKlingKlong() throws ConfigurationException {
+  private Klingklong createKlingKlong() throws ConfigurationException, UnknownHostException {
     final Klingklong klingklong;
     switch (type) {
     case KLING:

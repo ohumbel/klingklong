@@ -1,5 +1,7 @@
 package st.extreme.klingklong;
 
+import java.net.UnknownHostException;
+
 /**
  * The interface for an endpoint
  * <p>
@@ -13,8 +15,9 @@ public interface Klingklong extends AutoCloseable {
    * @param configuration the configuration
    * 
    * @throws ConfigurationException in case of a mismatched configuration.
+   * @throws UnknownHostException in case the remote host is not known.
    */
-  public void configure(Configuration configuration) throws ConfigurationException;
+  public void configure(Configuration configuration) throws ConfigurationException, UnknownHostException;
 
   /**
    * Establish the connection.

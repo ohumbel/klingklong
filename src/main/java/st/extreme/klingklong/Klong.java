@@ -1,5 +1,7 @@
 package st.extreme.klingklong;
 
+import java.net.UnknownHostException;
+
 public class Klong extends Endpoint {
 
   /**
@@ -7,9 +9,10 @@ public class Klong extends Endpoint {
    * 
    * @return the Klong endpoint instance
    * 
-   * @throws ConfigurationException in case of a mismatched configuration
+   * @throws ConfigurationException in case of a mismatched configuration.
+   * @throws UnknownHostException in case the remote host is not known.
    */
-  public static Klong create() throws ConfigurationException {
+  public static Klong create() throws ConfigurationException, UnknownHostException {
     Klong klong = new Klong();
     klong.configure(Klong.defaultConfiguration());
     return klong;
