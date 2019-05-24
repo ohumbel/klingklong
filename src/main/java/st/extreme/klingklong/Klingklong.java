@@ -1,5 +1,9 @@
 package st.extreme.klingklong;
 
+/**
+ * TODO: add description
+ *
+ */
 public interface Klingklong extends AutoCloseable {
 
   /**

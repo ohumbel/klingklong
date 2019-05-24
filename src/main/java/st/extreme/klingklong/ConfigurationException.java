@@ -11,10 +11,11 @@ public class ConfigurationException extends Exception {
     super(message);
   }
 
-  private static enum Reason {
+  public static enum Reason {
     SAME_PORT("The same port on the same host ist not allowed."), //
     DUPLICATE("The exact same configuration is already present."), //
-    ALREADY("This endpoint is already configured");
+    ALREADY("This endpoint is already configured"), //
+    UNKOWN_TYPE("The specified type is unknown");
 
     private final String errorMessage;
 

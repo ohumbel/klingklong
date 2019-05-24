@@ -2,7 +2,7 @@ package st.extreme.klingklong.demo;
 
 import st.extreme.klingklong.Type;
 
-public class JVM1 {
+public class JVM2 {
 
   /**
    * Main method for testing
@@ -10,7 +10,7 @@ public class JVM1 {
    * @param args
    */
   public static void main(String[] args) {
-    JVMWorker worker = new JVMWorker(Type.KLING);
+    JVMWorker worker = new JVMWorker(Type.KLONG);
     try {
       worker.workAndCommunicate();
       System.exit(0);
@@ -19,4 +19,5 @@ public class JVM1 {
       System.exit(1);
     }
   }
+
 }
