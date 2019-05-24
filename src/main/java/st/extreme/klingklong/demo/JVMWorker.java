@@ -33,6 +33,7 @@ public class JVMWorker implements MessageListener {
   }
 
   void workAndCommunicate() throws Exception {
+    System.out.println("creating klingklong");
     try (Klingklong klingklong = createKlingKlong()) {
       klingklong.addMessageListener(this);
       klingklong.connect();
@@ -47,13 +48,20 @@ public class JVMWorker implements MessageListener {
   }
 
   private Klingklong createKlingKlong() throws ConfigurationException {
+    final Klingklong klingklong;
     switch (type) {
     case KLING:
-      return Kling.create();
+      System.out.println("creating kling");
+      klingklong = Kling.create();
+      break;
     case KLONG:
-      return Klong.create();
+      System.out.println("creating kling");
+      klingklong = Klong.create();
+      break;
+    default:
+      throw new ConfigurationException(Reason.UNKOWN_TYPE);
     }
-    throw new ConfigurationException(Reason.UNKOWN_TYPE);
+    return klingklong;
   }
 
   private void work() throws InterruptedException {
