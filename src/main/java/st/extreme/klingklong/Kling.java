@@ -1,10 +1,13 @@
 package st.extreme.klingklong;
-public class Kling implements Klingklong {
+
+public class Kling extends Endpoint {
 
   /**
-   * Create the default kling endpoint, using its default configuration
+   * Create the default Kling endpoint, using its default configuration
    * 
-   * @throws ConfigurationException
+   * @return the Kling endpoint instance
+   * 
+   * @throws ConfigurationException in case of a mismatched configuration
    */
   public static Kling create() throws ConfigurationException {
     Kling kling = new Kling();
@@ -13,43 +16,8 @@ public class Kling implements Klingklong {
   }
 
   private static Configuration defaultConfiguration() {
+
     return null;
-  }
-
-  @Override
-  public void close() throws Exception {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void configure(Configuration configuration) throws ConfigurationException {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void connect() throws ConnectionError {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void send(String message) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void addMessageListener(MessageListener messageListener) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void removeMessageListener(MessageListener messageListener) {
-    // TODO Auto-generated method stub
-
   }
 
 }

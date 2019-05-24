@@ -5,7 +5,7 @@ public interface MessageListener {
   /**
    * Notify that a message was received.
    * 
-   * @param message
+   * @param message the message in plain text
    */
   public void onMessage(String message);
 }

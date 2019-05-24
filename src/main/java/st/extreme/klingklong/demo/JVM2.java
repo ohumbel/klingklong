@@ -7,7 +7,7 @@ public class JVM2 {
   /**
    * Main method for testing
    * 
-   * @param args
+   * @param args the arguments
    */
   public static void main(String[] args) {
     System.out.println("starting worker on jvm 2");
