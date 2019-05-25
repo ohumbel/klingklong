@@ -7,7 +7,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class Receiver extends Thread {
@@ -21,10 +20,6 @@ public class Receiver extends Thread {
     this.ourName = InetAddress.getLocalHost().getHostName();
   }
 
-  private void testTheConsumer() {
-    messageConsumer.accept("message");
-  }
-
   @Override
   public void run() {
     System.out.println(ourName + " is starting to listen on port " + listeningPort);
@@ -32,25 +27,20 @@ public class Receiver extends Thread {
         Socket listeningSocket = serverSocket.accept();
         BufferedReader in = new BufferedReader(new InputStreamReader(listeningSocket.getInputStream()));) {
       String inputLine;
-
       System.out.println("waiting for data...");
       while ((inputLine = in.readLine()) != null) {
-        // TODO work over
         String msg = Message.afterReceiving(inputLine);
         if (Sender.STOP_SENDING_SIGNAL.equals(msg)) {
           System.out.println("got <STOP> signal from remote");
           break;
         } else {
           System.out.println("got " + msg);
+          messageConsumer.accept(msg);
         }
       }
-
-      System.out.println(ourName + " receiver is closing in 2 seconds");
-      TimeUnit.SECONDS.sleep(2);
+      System.out.println(ourName + " closing receiver");
     } catch (IOException e) {
       System.out.println("Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
-      e.printStackTrace();
-    } catch (InterruptedException e) {
       e.printStackTrace();
     }
   }
