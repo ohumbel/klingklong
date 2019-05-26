@@ -77,4 +77,11 @@ final public class DemoSender extends Thread {
     }
     return sendingSocket;
   }
+
+  void sendLocal(String message, int localReceivingPort) throws UnknownHostException, IOException {
+    try (Socket localReceivingSocket = new Socket(InetAddress.getLocalHost(), localReceivingPort);
+        PrintWriter out = new PrintWriter(localReceivingSocket.getOutputStream(), true)) {
+      out.println(Message.forSending(message));
+    }
+  }
 }

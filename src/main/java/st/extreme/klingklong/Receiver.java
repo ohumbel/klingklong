@@ -30,7 +30,7 @@ public class Receiver extends Thread {
       System.out.println("waiting for data...");
       while ((inputLine = in.readLine()) != null) {
         String msg = Message.afterReceiving(inputLine);
-        if (Sender.STOP_SENDING_SIGNAL.equals(msg)) {
+        if (Sender.STOP_SIGNAL.equals(msg)) {
           System.out.println("got <STOP> signal from remote");
           break;
         } else {
