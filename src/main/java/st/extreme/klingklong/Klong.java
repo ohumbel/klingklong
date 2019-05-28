@@ -2,7 +2,7 @@ package st.extreme.klingklong;
 
 import java.net.UnknownHostException;
 
-public class Klong extends Endpoint {
+public class Klong extends EndpointImpl {
 
   /**
    * Create the default Klong endpoint, using its default configuration
