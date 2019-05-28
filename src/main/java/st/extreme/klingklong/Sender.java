@@ -50,10 +50,16 @@ final class Sender extends Thread {
   }
 
   void send(String message) {
+    if (STOP_SIGNAL.equals(message)) {
+      System.out.println("sending STOP signal");
+    } else {
+      System.out.println(String.format("sending %s", message));
+    }
     writer.println(Message.forSending(message));
   }
 
   void close() {
+    System.out.println("closing sender");
     send(STOP_SIGNAL);
     try {
       sendLocalSTOP();
@@ -96,8 +102,12 @@ final class Sender extends Thread {
   }
 
   private void runningLoop() {
+    long count = 0;
     while (isRunning()) {
       try {
+        if (count % 200 == 0) {
+          System.out.println("sender running");
+        }
         TimeUnit.MILLISECONDS.sleep(500);
       } catch (InterruptedException e) {
         e.printStackTrace();
