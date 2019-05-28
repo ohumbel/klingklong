@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 final class Sender extends Thread {
 
@@ -14,12 +15,16 @@ final class Sender extends Thread {
   private final String ourName;
   private final InetAddress remoteHost;
   private final int sendingPort;
+  private final int localReceivingPort;
+  private final AtomicBoolean running;
   private PrintWriter writer;
 
-  public Sender(InetAddress remoteHost, int sendingPort) throws UnknownHostException {
+  public Sender(InetAddress remoteHost, int sendingPort, int localReceivingPort) throws UnknownHostException {
     this.ourName = InetAddress.getLocalHost().getHostName();
     this.remoteHost = remoteHost;
     this.sendingPort = sendingPort;
+    this.localReceivingPort = localReceivingPort;
+    this.running = new AtomicBoolean(true);
   }
 
   @Override
@@ -27,8 +32,9 @@ final class Sender extends Thread {
     System.out.println(ourName + " is creating a sending socket on port " + sendingPort);
     try (Socket sendingSocket = waitForRemoteAcceptance()) {
       try {
+        // since writer is a member used for sending, we cannot embed it into a try with resources block
         writer = new PrintWriter(sendingSocket.getOutputStream(), true);
-        // TODO loop until closed
+        runningLoop();
       } finally {
         if (writer != null) {
           writer.close();
@@ -48,15 +54,20 @@ final class Sender extends Thread {
   }
 
   void close() {
-    // TODO
+    send(STOP_SIGNAL);
+    try {
+      sendLocalSTOP();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    running.set(false);
   }
 
-  // TODO: only used for stop?
-  void sendLocal(String message, int localReceivingPort) throws UnknownHostException, IOException {
-    System.out.println(String.format("sending local message %s", message));
+  private void sendLocalSTOP() throws UnknownHostException, IOException {
+    System.out.println("sending local STOP signal");
     try (Socket localReceivingSocket = new Socket(InetAddress.getLocalHost(), localReceivingPort);
         PrintWriter out = new PrintWriter(localReceivingSocket.getOutputStream(), true)) {
-      out.println(Message.forSending(message));
+      out.println(Message.forSending(STOP_SIGNAL));
     }
   }
 
@@ -82,6 +93,20 @@ final class Sender extends Thread {
       }
     }
     return sendingSocket;
+  }
+
+  private void runningLoop() {
+    while (isRunning()) {
+      try {
+        TimeUnit.MILLISECONDS.sleep(500);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  final boolean isRunning() {
+    return running.get();
   }
 
 }

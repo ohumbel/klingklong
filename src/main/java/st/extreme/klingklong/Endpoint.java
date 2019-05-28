@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Endpoint implements Klingklong {
 
-  private Configuration configuration;
   private Receiver receiver;
   private Sender sender;
   private List<MessageListener> messageListeners;
@@ -20,9 +19,8 @@ public class Endpoint implements Klingklong {
   // TODO move into constructor ?
   final public void configure(Configuration configuration) throws ConfigurationException, UnknownHostException {
     // TODO check for invalid configuration
-    this.configuration = configuration;
     receiver = new Receiver(configuration.getLocalPort(), this::messageReceived);
-    sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort());
+    sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort());
     messageListeners = new ArrayList<>();
   }
 
@@ -32,9 +30,8 @@ public class Endpoint implements Klingklong {
       receiver.start();
       sender.start();
       // TODO handshake (or change javadoc)
-      // TODO start open loop
+      running.set(true);
     }
-    running.set(true);
   }
 
   @Override
@@ -64,14 +61,10 @@ public class Endpoint implements Klingklong {
     // end the open loop
     running.set(false);
 
-    // inform the remote
     // remove message listeners
     messageListeners.clear();
 
-    // stop receiver (by sending stop to ourselves?)
-    sender.sendLocal(Sender.STOP_SIGNAL, configuration.getLocalPort());
-
-    // stop sender
+    // stop sender (this implicitly stops the remote and closes the receiver as well)
     sender.close();
   }
 

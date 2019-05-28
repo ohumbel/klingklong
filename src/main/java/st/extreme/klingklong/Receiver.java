@@ -29,13 +29,13 @@ public class Receiver extends Thread {
       String inputLine;
       System.out.println("waiting for data...");
       while ((inputLine = in.readLine()) != null) {
-        String msg = Message.afterReceiving(inputLine);
-        if (Sender.STOP_SIGNAL.equals(msg)) {
-          System.out.println("got <STOP> signal from remote");
+        String message = Message.afterReceiving(inputLine);
+        if (Sender.STOP_SIGNAL.equals(message)) {
+          System.out.println("got <STOP> signal");
           break;
         } else {
-          System.out.println("got " + msg);
-          messageConsumer.accept(msg);
+          System.out.println("got " + message);
+          messageConsumer.accept(message);
         }
       }
       System.out.println(ourName + " closing receiver");
