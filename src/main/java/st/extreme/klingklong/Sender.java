@@ -14,6 +14,7 @@ final class Sender extends Thread {
   private final String ourName;
   private final InetAddress remoteHost;
   private final int sendingPort;
+  private PrintWriter writer;
 
   public Sender(InetAddress remoteHost, int sendingPort) throws UnknownHostException {
     this.ourName = InetAddress.getLocalHost().getHostName();
@@ -23,11 +24,27 @@ final class Sender extends Thread {
 
   @Override
   public void run() {
-    // TODO
+    System.out.println(ourName + " is creating a sending socket on port " + sendingPort);
+    try (Socket sendingSocket = waitForRemoteAcceptance()) {
+      try {
+        writer = new PrintWriter(sendingSocket.getOutputStream(), true);
+        // TODO loop until closed
+      } finally {
+        if (writer != null) {
+          writer.close();
+        }
+      }
+    } catch (UnknownHostException e) {
+      System.err.println("Don't know about host " + remoteHost.getHostName());
+      e.printStackTrace();
+    } catch (IOException e) {
+      System.err.println("Couldn't get I/O for the connection to " + remoteHost.getHostName());
+      e.printStackTrace();
+    }
   }
 
   void send(String message) {
-    // TODO
+    writer.println(Message.forSending(message));
   }
 
   void close() {
