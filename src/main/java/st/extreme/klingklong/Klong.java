@@ -1,8 +1,11 @@
 package st.extreme.klingklong;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class Klong extends EndpointImpl {
+final public class Klong extends EndpointImpl {
+
+  static final int DEFAULT_KLONG_PORT = 8539;
 
   /**
    * Create the default Klong endpoint, using its default configuration
@@ -18,8 +21,9 @@ public class Klong extends EndpointImpl {
     return klong;
   }
 
-  private static Configuration defaultConfiguration() {
-    return null;
+  private static Configuration defaultConfiguration() throws UnknownHostException {
+    return ConfigurationBuilder.create().withLocalPort(DEFAULT_KLONG_PORT).withRemoteHost(InetAddress.getLocalHost())
+        .withRemotePort(Kling.DEFAUT_KLING_PORT).build();
   }
 
 }
