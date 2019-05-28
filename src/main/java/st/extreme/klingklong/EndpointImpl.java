@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Implementation of an endpoint.
  */
-public class EndpointImpl implements Klingklong {
+public class EndpointImpl implements Endpoint {
 
   private Receiver receiver;
   private Sender sender;

@@ -7,7 +7,7 @@ import java.net.UnknownHostException;
  * <p>
  * Since an endpoint is {@code AutoCloseable}, it is mandatory to use it in a {@code try} with resources block.
  */
-public interface Klingklong extends AutoCloseable {
+public interface Endpoint extends AutoCloseable {
 
   /**
    * Configure with remote and local host names and port numbers.

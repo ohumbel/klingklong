@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import st.extreme.klingklong.ConfigurationException;
 import st.extreme.klingklong.ConfigurationException.Reason;
+import st.extreme.klingklong.Endpoint;
 import st.extreme.klingklong.Kling;
-import st.extreme.klingklong.Klingklong;
 import st.extreme.klingklong.Klong;
 import st.extreme.klingklong.MessageListener;
 import st.extreme.klingklong.Type;
@@ -34,35 +34,35 @@ public class JVMWorker implements MessageListener {
   }
 
   void workAndCommunicate() throws Exception {
-    System.out.println("creating klingklong");
-    try (Klingklong klingklong = createKlingKlong()) {
-      klingklong.addMessageListener(this);
-      klingklong.connect();
+    System.out.println("creating endpoint");
+    try (Endpoint endpoint = createEndpoint()) {
+      endpoint.addMessageListener(this);
+      endpoint.connect();
       while (atWork.get()) {
-        klingklong.send(String.format("doing some work (%d)", workCount.get()));
+        endpoint.send(String.format("doing some work (%d)", workCount.get()));
         work();
       }
-      klingklong.send("my work is done soon");
+      endpoint.send("my work is done soon");
       TimeUnit.SECONDS.sleep(1);
-      klingklong.send("bye");
+      endpoint.send("bye");
     }
   }
 
-  private Klingklong createKlingKlong() throws ConfigurationException, UnknownHostException {
-    final Klingklong klingklong;
+  private Endpoint createEndpoint() throws ConfigurationException, UnknownHostException {
+    final Endpoint endpoint;
     switch (type) {
     case KLING:
       System.out.println("creating kling");
-      klingklong = Kling.create();
+      endpoint = Kling.create();
       break;
     case KLONG:
       System.out.println("creating kling");
-      klingklong = Klong.create();
+      endpoint = Klong.create();
       break;
     default:
       throw new ConfigurationException(Reason.UNKOWN_TYPE);
     }
-    return klingklong;
+    return endpoint;
   }
 
   private void work() throws InterruptedException {
