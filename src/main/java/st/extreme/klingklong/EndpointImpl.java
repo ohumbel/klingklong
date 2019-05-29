@@ -3,6 +3,7 @@ package st.extreme.klingklong;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -21,7 +22,7 @@ public class EndpointImpl implements Endpoint {
     System.out.println("creating endpoint");
     // TODO check for invalid configuration
     receiver = new Receiver(configuration.getLocalPort(), this::messageReceived);
-    sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort());
+    sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), this::setRunning);
     messageListeners = new ArrayList<>();
   }
 
@@ -31,8 +32,15 @@ public class EndpointImpl implements Endpoint {
     if (!isRunning()) {
       receiver.start();
       sender.start();
-      // TODO handshake (or change javadoc)
-      running.set(true);
+      while (!isRunning()) {
+        // wait for the sender callback to set running to true
+        try {
+          TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException e) {
+          throw new ConnectionError("Error while waiting for sender", e);
+        }
+        // TODO handshake (or change javadoc)
+      }
     }
   }
 
@@ -86,5 +94,9 @@ public class EndpointImpl implements Endpoint {
 
   final boolean isRunning() {
     return running.get();
+  }
+
+  final void setRunning(Boolean newRunning) {
+    running.set(newRunning.booleanValue());
   }
 }

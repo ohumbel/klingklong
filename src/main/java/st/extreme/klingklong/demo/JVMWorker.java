@@ -27,22 +27,22 @@ public class JVMWorker implements MessageListener {
 
   @Override
   public void onMessage(String message) {
-    System.out.println("got message: '" + message + "'");
+    System.out.println(String.format("worker: got message: '%s", message));
     if ("STOP".equals(message)) { // TODO: check how to stop really
       stopWork();
     }
   }
 
   void workAndCommunicate() throws Exception {
-    System.out.println("creating endpoint");
+    System.out.println("worker: creating endpoint");
     try (Endpoint endpoint = createEndpoint()) {
       endpoint.addMessageListener(this);
       endpoint.connect();
       while (atWork.get()) {
-        endpoint.send(String.format("doing some work (%d)", workCount.get()));
+        endpoint.send(String.format("worker: doing some work (%d)", workCount.get()));
         work();
       }
-      endpoint.send("my work is done soon");
+      endpoint.send("worker: my work is done soon");
       TimeUnit.SECONDS.sleep(1);
       endpoint.send("bye");
     }
@@ -56,7 +56,7 @@ public class JVMWorker implements MessageListener {
       endpoint = Kling.create();
       break;
     case KLONG:
-      System.out.println("creating kling");
+      System.out.println("creating klong");
       endpoint = Klong.create();
       break;
     default:
@@ -74,6 +74,7 @@ public class JVMWorker implements MessageListener {
   }
 
   private void stopWork() {
+    System.out.println("worker: stopping");
     atWork.set(false);
   }
 

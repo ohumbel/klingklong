@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 final class Sender extends Thread {
 
@@ -16,15 +17,18 @@ final class Sender extends Thread {
   private final InetAddress remoteHost;
   private final int sendingPort;
   private final int localReceivingPort;
+  private final Consumer<Boolean> connectedConsumer;
   private final AtomicBoolean running;
   private PrintWriter writer;
 
-  public Sender(InetAddress remoteHost, int sendingPort, int localReceivingPort) throws UnknownHostException {
+  public Sender(InetAddress remoteHost, int sendingPort, int localReceivingPort, Consumer<Boolean> connectedConsumer)
+      throws UnknownHostException {
     this.ourName = InetAddress.getLocalHost().getHostName();
     this.remoteHost = remoteHost;
     this.sendingPort = sendingPort;
     this.localReceivingPort = localReceivingPort;
-    this.running = new AtomicBoolean(true);
+    this.connectedConsumer = connectedConsumer;
+    this.running = new AtomicBoolean(false);
   }
 
   @Override
@@ -32,10 +36,12 @@ final class Sender extends Thread {
     System.out.println(ourName + " is creating a sending socket on port " + sendingPort);
     try (Socket sendingSocket = waitForRemoteAcceptance()) {
       try {
+        System.out.println("sender is creating a writer to the sending port");
         // since writer is a member used for sending, we cannot embed it into a try with resources block
         writer = new PrintWriter(sendingSocket.getOutputStream(), true);
         runningLoop();
       } finally {
+        System.out.println("sender is closing the writer");
         if (writer != null) {
           writer.close();
         }
@@ -70,6 +76,7 @@ final class Sender extends Thread {
   }
 
   private void sendLocalSTOP() throws UnknownHostException, IOException {
+    // TODO receiver might already be closed - and the effect is not yet visible
     System.out.println("sending local STOP signal");
     try (Socket localReceivingSocket = new Socket(InetAddress.getLocalHost(), localReceivingPort);
         PrintWriter out = new PrintWriter(localReceivingSocket.getOutputStream(), true)) {
@@ -98,14 +105,18 @@ final class Sender extends Thread {
         }
       }
     }
+    System.out.println("sender: end waiting");
+    running.set(true);
+    connectedConsumer.accept(running.get());
     return sendingSocket;
   }
 
   private void runningLoop() {
+    System.out.println("sender running");
     long count = 0;
     while (isRunning()) {
       try {
-        if (count % 200 == 0) {
+        if (count % 100 == 0) {
           System.out.println("sender running");
         }
         TimeUnit.MILLISECONDS.sleep(500);
