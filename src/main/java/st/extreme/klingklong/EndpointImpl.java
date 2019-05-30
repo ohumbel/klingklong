@@ -41,6 +41,7 @@ public class EndpointImpl implements Endpoint {
         }
         // TODO handshake (or change javadoc)
       }
+      System.out.println("endpoint is now running");
     }
   }
 
@@ -53,31 +54,27 @@ public class EndpointImpl implements Endpoint {
 
   @Override
   final public void addMessageListener(MessageListener messageListener) {
-    if (isRunning()) {
-      System.out.println("adding message listener");
-      messageListeners.add(messageListener);
-    }
+    System.out.println("endpoint adding message listener");
+    messageListeners.add(messageListener);
   }
 
   @Override
   final public void removeMessageListener(MessageListener messageListener) {
-    if (isRunning()) {
-      System.out.println("removing message listener");
-      messageListeners.remove(messageListener);
-    }
+    System.out.println("endpoint removing message listener");
+    messageListeners.remove(messageListener);
   }
 
+  // TODO RETHINKG THE WHOLE CLOSING SEQUENCE - FROM ENDPOINT down to sender/receiver
   @Override
   final public void close() throws Exception {
     System.out.println("closing endpoint");
-    // TODO several things
     // end the open loop
     running.set(false);
 
     // remove message listeners
     messageListeners.clear();
 
-    // stop sender (this implicitly stops the remote and closes the receiver as well)
+    // stop sender (this implicitly stops the remote and closes the receiver as well (if not already closed))
     sender.close();
   }
 
@@ -97,6 +94,7 @@ public class EndpointImpl implements Endpoint {
   }
 
   final void setRunning(Boolean newRunning) {
+    System.out.println(String.format("endpoint sets running to %s", newRunning.toString()));
     running.set(newRunning.booleanValue());
   }
 }

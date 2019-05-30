@@ -27,25 +27,27 @@ public class JVMWorker implements MessageListener {
 
   @Override
   public void onMessage(String message) {
-    System.out.println(String.format("worker: got message: '%s", message));
-    if ("STOP".equals(message)) { // TODO: check how to stop really
+    // TODO: check how to stop really
+    System.out.println(String.format("worker got a message '%s'", message));
+    if ("STOP".equals(message)) {
       stopWork();
     }
   }
 
   void workAndCommunicate() throws Exception {
-    System.out.println("worker: creating endpoint");
+    System.out.println("worker is creating the endpoint");
     try (Endpoint endpoint = createEndpoint()) {
       endpoint.addMessageListener(this);
       endpoint.connect();
       while (atWork.get()) {
-        endpoint.send(String.format("worker: doing some work (%d)", workCount.get()));
+        endpoint.send(String.format("I am doing some work (%d)", workCount.get()));
         work();
       }
-      endpoint.send("worker: my work is done soon");
+      endpoint.send("My work is done soon");
       TimeUnit.SECONDS.sleep(1);
       endpoint.send("bye");
     }
+    System.out.println("worker just sent 'bye'");
   }
 
   private Endpoint createEndpoint() throws ConfigurationException, UnknownHostException {
@@ -68,7 +70,7 @@ public class JVMWorker implements MessageListener {
   private void work() throws InterruptedException {
     int actualWorkCount = workCount.incrementAndGet();
     TimeUnit.SECONDS.sleep(3);
-    if (actualWorkCount > 5) {
+    if (actualWorkCount > 2) {
       stopWork();
     }
   }

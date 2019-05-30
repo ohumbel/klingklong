@@ -19,20 +19,20 @@ public class Receiver extends Thread {
 
   @Override
   public void run() {
-    System.out.println("receiver is starting to listen on port " + listeningPort);
+    System.out.println(String.format("receiver is waiting to start to listen on port %d", listeningPort));
     try (ServerSocket serverSocket = new ServerSocket(listeningPort);
         Socket listeningSocket = serverSocket.accept();
         BufferedReader in = new BufferedReader(new InputStreamReader(listeningSocket.getInputStream()));) {
       String inputLine;
-      System.out.println("receiver is waiting for data...");
+      System.out.println("receiver is reading/waiting for data.");
       while ((inputLine = in.readLine()) != null) {
-        System.out.println("got an input line");
+        System.out.println("receiver got an input line");
         String message = Message.afterReceiving(inputLine);
         if (Sender.STOP_SIGNAL.equals(message)) {
-          System.out.println("got <STOP> signal");
+          System.out.println("receiver got <STOP> signal");
           break;
         } else {
-          System.out.println("got " + message);
+          System.out.println(String.format("receiver got '%s'", message));
           messageConsumer.accept(message);
         }
       }
@@ -41,6 +41,7 @@ public class Receiver extends Thread {
       System.out.println("Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
       e.printStackTrace();
     }
+    System.out.println("reciever thread terminating");
   }
 
 }
