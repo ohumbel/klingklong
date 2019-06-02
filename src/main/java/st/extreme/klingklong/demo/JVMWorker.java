@@ -39,6 +39,7 @@ public class JVMWorker implements MessageListener {
     try (Endpoint endpoint = createEndpoint()) {
       endpoint.addMessageListener(this);
       endpoint.connect();
+      System.out.println("worker's endpoint is now connected\n---------------------------");
       while (atWork.get()) {
         endpoint.send(String.format("I am doing some work (%d)", workCount.get()));
         work();
@@ -47,7 +48,7 @@ public class JVMWorker implements MessageListener {
       TimeUnit.SECONDS.sleep(1);
       endpoint.send("bye");
     }
-    System.out.println("worker just sent 'bye'");
+    System.out.println("worker finally closed the endpoint");
   }
 
   private Endpoint createEndpoint() throws ConfigurationException, UnknownHostException {
@@ -69,7 +70,13 @@ public class JVMWorker implements MessageListener {
 
   private void work() throws InterruptedException {
     int actualWorkCount = workCount.incrementAndGet();
-    TimeUnit.SECONDS.sleep(3);
+    // for testing ?
+    double rand = Math.random();
+    if (rand <= 0.5) {
+      TimeUnit.SECONDS.sleep(1);
+    } else {
+      TimeUnit.SECONDS.sleep(2);
+    }
     if (actualWorkCount > 2) {
       stopWork();
     }

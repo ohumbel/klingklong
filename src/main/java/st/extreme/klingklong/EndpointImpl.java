@@ -17,7 +17,6 @@ public class EndpointImpl implements Endpoint {
   private AtomicBoolean running = new AtomicBoolean(false);
 
   @Override
-  // TODO move into constructor ?
   final public void configure(Configuration configuration) throws ConfigurationException, UnknownHostException {
     System.out.println("creating endpoint");
     // TODO check for invalid configuration
@@ -32,6 +31,7 @@ public class EndpointImpl implements Endpoint {
     if (!isRunning()) {
       receiver.start();
       sender.start();
+      // TODO use a semaphore here, otherwise messages are coming in before this method is terminated
       while (!isRunning()) {
         // wait for the sender callback to set running to true
         try {
@@ -39,7 +39,7 @@ public class EndpointImpl implements Endpoint {
         } catch (InterruptedException e) {
           throw new ConnectionError("Error while waiting for sender", e);
         }
-        // TODO handshake (or change javadoc)
+        // TODO change javadoc (no handshake)
       }
       System.out.println("endpoint is now running");
     }
@@ -74,7 +74,7 @@ public class EndpointImpl implements Endpoint {
     // remove message listeners
     messageListeners.clear();
 
-    // stop sender (this implicitly stops the remote and closes the receiver as well (if not already closed))
+    // stop sender (this implicitly stops the remote and closes the receiver if necessary)
     sender.close();
   }
 
@@ -83,7 +83,7 @@ public class EndpointImpl implements Endpoint {
       if (Sender.STOP_SIGNAL.equals(message)) {
         System.out.println("endpoint received STOP signal");
       } else {
-        System.out.println(String.format("endpoint received message %s", message));
+        System.out.println(String.format("endpoint received message '%s'", message));
       }
       messageListeners.forEach(listener -> listener.onMessage(message));
     }

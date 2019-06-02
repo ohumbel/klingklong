@@ -31,7 +31,7 @@ final class Sender extends Thread {
 
   @Override
   public void run() {
-    System.out.println("sender is creating a sending socket on port " + sendingPort);
+    System.out.println(String.format("sender is creating a sending socket on port %d", sendingPort));
     try (Socket sendingSocket = waitForRemoteAcceptance()) {
       try {
         System.out.println("sender is creating a writer to the sending port");
@@ -60,7 +60,7 @@ final class Sender extends Thread {
     if (STOP_SIGNAL.equals(message)) {
       System.out.println("sending STOP signal");
     } else {
-      System.out.println(String.format("sending %s", message));
+      System.out.println(String.format("sending '%s'", message));
     }
     writer.println(Message.forSending(message));
   }
@@ -78,10 +78,9 @@ final class Sender extends Thread {
     try (Socket localReceivingSocket = new Socket(InetAddress.getLocalHost(), localReceivingPort);
         PrintWriter out = new PrintWriter(localReceivingSocket.getOutputStream(), true)) {
       out.println(Message.forSending(STOP_SIGNAL));
-    } catch (UnknownHostException e) {
-      // simply ignore because receiver might already been closed
+      System.out.println("sendLocalSTOP was successful");
     } catch (IOException e) {
-      // simply ignore because receiver might already been closed }
+      System.out.println("sendLocalSTOP was not successful");
     }
   }
 
@@ -111,15 +110,11 @@ final class Sender extends Thread {
     return sendingSocket;
   }
 
+  // TODO can we do this without sleepint?
   private void runningLoop() {
-    long count = 0;
     while (isRunning()) {
       try {
-        if (count % 20 == 0) {
-          System.out.println("sender running");
-        }
         TimeUnit.MILLISECONDS.sleep(500);
-        count++;
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
