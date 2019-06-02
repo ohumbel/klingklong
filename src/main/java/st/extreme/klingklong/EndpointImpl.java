@@ -18,7 +18,7 @@ public class EndpointImpl implements Endpoint {
 
   @Override
   final public void configure(Configuration configuration) throws ConfigurationException, UnknownHostException {
-    System.out.println("creating endpoint");
+    System.out.println("endpoint configures");
     // TODO check for invalid configuration
     receiver = new Receiver(configuration.getLocalPort(), this::messageReceived);
     sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), this::setRunning);
@@ -27,7 +27,7 @@ public class EndpointImpl implements Endpoint {
 
   @Override
   final public void connect() throws ConnectionError {
-    System.out.println("connecting endpoint...");
+    System.out.println("endpoint connecting ...");
     if (!isRunning()) {
       receiver.start();
       sender.start();
@@ -39,7 +39,6 @@ public class EndpointImpl implements Endpoint {
         } catch (InterruptedException e) {
           throw new ConnectionError("Error while waiting for sender", e);
         }
-        // TODO change javadoc (no handshake)
       }
       System.out.println("endpoint is now running");
     }
@@ -64,36 +63,29 @@ public class EndpointImpl implements Endpoint {
     messageListeners.remove(messageListener);
   }
 
-  // TODO RETHINKG THE WHOLE CLOSING SEQUENCE - FROM ENDPOINT down to sender/receiver
   @Override
   final public void close() throws Exception {
     System.out.println("closing endpoint");
-    // end the open loop
+    // terminate the running loop
     running.set(false);
-
     // remove message listeners
     messageListeners.clear();
-
     // stop sender (this implicitly stops the remote and closes the receiver if necessary)
     sender.close();
   }
 
   final private void messageReceived(String message) {
     if (isRunning()) {
-      if (Sender.STOP_SIGNAL.equals(message)) {
-        System.out.println("endpoint received STOP signal");
-      } else {
-        System.out.println(String.format("endpoint received message '%s'", message));
-      }
+      System.out.println(String.format("endpoint received message '%s'", message));
       messageListeners.forEach(listener -> listener.onMessage(message));
     }
   }
 
-  final boolean isRunning() {
+  final private boolean isRunning() {
     return running.get();
   }
 
-  final void setRunning(Boolean newRunning) {
+  final private void setRunning(Boolean newRunning) {
     System.out.println(String.format("endpoint sets running to %s", newRunning.toString()));
     running.set(newRunning.booleanValue());
   }

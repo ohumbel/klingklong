@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 /**
  * The interface for an endpoint
  * <p>
- * Since an endpoint is {@code AutoCloseable}, it is mandatory to use it in a {@code try} with resources block.
+ * Since an endpoint is {@code AutoCloseable}, it is <strong>mandatory</strong> to use it in a {@code try} with resources block.
  */
 public interface Endpoint extends AutoCloseable {
 
@@ -22,7 +22,7 @@ public interface Endpoint extends AutoCloseable {
   /**
    * Establish the connection.
    * <p>
-   * This method blocks until the remote accepts the connection and an initial handshake was successful.
+   * This method blocks until the remote accepts the connection.
    * 
    * @throws ConnectionError if the remote endpoint cannot be reached.
    */

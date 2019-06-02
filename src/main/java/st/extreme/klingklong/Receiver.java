@@ -36,12 +36,12 @@ public class Receiver extends Thread {
           messageConsumer.accept(message);
         }
       }
-      System.out.println("closing receiver");
+      System.out.println("receiver is closing");
     } catch (IOException e) {
       System.out.println("Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
       e.printStackTrace();
     }
-    System.out.println("reciever thread terminating");
+    System.out.println("receiver thread is terminating now");
   }
 
 }

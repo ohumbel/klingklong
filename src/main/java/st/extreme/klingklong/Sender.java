@@ -66,7 +66,7 @@ final class Sender extends Thread {
   }
 
   void close() {
-    System.out.println("closing sender");
+    System.out.println("sender starts closing");
     send(STOP_SIGNAL);
     sendLocalSTOP();
     running.set(false);
@@ -104,13 +104,13 @@ final class Sender extends Thread {
         }
       }
     }
-    System.out.println("sender: end waiting");
+    System.out.println("sender is not waiting any more");
     running.set(true);
     connectedConsumer.accept(running.get());
     return sendingSocket;
   }
 
-  // TODO can we do this without sleepint?
+  // TODO can we do this without sleeping?
   private void runningLoop() {
     while (isRunning()) {
       try {
