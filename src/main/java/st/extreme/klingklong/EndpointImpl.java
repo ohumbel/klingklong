@@ -11,10 +11,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class EndpointImpl implements Endpoint {
 
+  private final List<MessageListener> messageListeners;
+
+  // TODO this should be global - receiver should not accept until everybody is up and running...
+  private final AtomicBoolean running;
+
   private Receiver receiver;
   private Sender sender;
-  private List<MessageListener> messageListeners;
-  private AtomicBoolean running = new AtomicBoolean(false);
+
+  public EndpointImpl() {
+    messageListeners = new ArrayList<>();
+    running = new AtomicBoolean(false);
+  }
 
   @Override
   final public void configure(Configuration configuration) throws ConfigurationException, UnknownHostException {
@@ -22,7 +30,6 @@ public class EndpointImpl implements Endpoint {
     // TODO check for invalid configuration
     receiver = new Receiver(configuration.getLocalPort(), this::messageReceived);
     sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), this::setRunning);
-    messageListeners = new ArrayList<>();
   }
 
   @Override
@@ -35,12 +42,12 @@ public class EndpointImpl implements Endpoint {
       while (!isRunning()) {
         // wait for the sender callback to set running to true
         try {
-          TimeUnit.MILLISECONDS.sleep(500);
+          TimeUnit.MILLISECONDS.sleep(50);
         } catch (InterruptedException e) {
           throw new ConnectionError("Error while waiting for sender", e);
         }
       }
-      System.out.println("endpoint is now running");
+      System.out.println("endpoint is now connected");
     }
   }
 
@@ -89,4 +96,5 @@ public class EndpointImpl implements Endpoint {
     System.out.println(String.format("endpoint sets running to %s", newRunning.toString()));
     running.set(newRunning.booleanValue());
   }
+
 }
