@@ -106,7 +106,7 @@ final class Sender extends Thread {
     }
     System.out.println("sender is not waiting any more");
     running.set(true);
-    connectedConsumer.accept(running.get());
+    connectedConsumer.accept(true);
     return sendingSocket;
   }
 
