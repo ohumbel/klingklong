@@ -8,7 +8,7 @@ public class SemaphoreDemo {
   private static Semaphore semaphore = new Semaphore(0, true);
 
   public static void main(String[] args) {
-    ChildThread childThread = new ChildThread(semaphore);
+    ChildThread childThread = new ChildThread();
     childThread.start();
     try {
       TimeUnit.SECONDS.sleep(1);
@@ -28,19 +28,13 @@ public class SemaphoreDemo {
   }
 
   private static class ChildThread extends Thread {
-    private final Semaphore outerSemaphore;
-
-    ChildThread(Semaphore outerSemaphore) {
-      this.outerSemaphore = outerSemaphore;
-    }
-
     @Override
     public void run() {
       try {
         log("child thread starting");
         TimeUnit.SECONDS.sleep(4);
         log("child thread releasing semaphore");
-        outerSemaphore.release();
+        semaphore.release();
         TimeUnit.SECONDS.sleep(1);
       } catch (InterruptedException e) {
         e.printStackTrace();
