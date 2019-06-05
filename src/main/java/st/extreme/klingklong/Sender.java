@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 final class Sender extends Thread {
 
@@ -17,7 +16,7 @@ final class Sender extends Thread {
   private final int sendingPort;
   private final int localReceivingPort;
   private final Semaphore connectedSemaphore;
-  private final AtomicBoolean running;
+  private final Semaphore closedSemaphore;
   private PrintWriter writer;
 
   public Sender(InetAddress remoteHost, int sendingPort, int localReceivingPort, Semaphore connectedSemaphore) throws UnknownHostException {
@@ -25,7 +24,7 @@ final class Sender extends Thread {
     this.sendingPort = sendingPort;
     this.localReceivingPort = localReceivingPort;
     this.connectedSemaphore = connectedSemaphore;
-    this.running = new AtomicBoolean(false);
+    closedSemaphore = new Semaphore(0, true);
   }
 
   @Override
@@ -69,7 +68,7 @@ final class Sender extends Thread {
     System.out.println("sender starts closing");
     send(STOP_SIGNAL);
     sendLocalSTOP();
-    running.set(false);
+    closedSemaphore.release();
   }
 
   private void sendLocalSTOP() {
@@ -105,24 +104,16 @@ final class Sender extends Thread {
       }
     }
     System.out.println("sender is not waiting any more");
-    running.set(true);
     return sendingSocket;
   }
 
-  // TODO can we do this without sleeping?
   private void runningLoop() {
-    while (isRunning()) {
-      try {
-        TimeUnit.MILLISECONDS.sleep(500);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+    try {
+      closedSemaphore.acquire();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
     System.out.println("sender ends running loop");
-  }
-
-  private final boolean isRunning() {
-    return running.get();
   }
 
 }
