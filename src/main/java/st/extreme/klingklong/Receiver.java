@@ -6,15 +6,19 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class Receiver extends Thread {
   private final int listeningPort;
   private final Consumer<String> messageConsumer;
+  private final AtomicBoolean released;
 
   public Receiver(int listeningPort, Consumer<String> messageConsumer) throws UnknownHostException {
     this.listeningPort = listeningPort;
     this.messageConsumer = messageConsumer;
+    this.released = new AtomicBoolean(false);
   }
 
   @Override
@@ -24,7 +28,18 @@ public class Receiver extends Thread {
         Socket listeningSocket = serverSocket.accept();
         BufferedReader in = new BufferedReader(new InputStreamReader(listeningSocket.getInputStream()));) {
       String inputLine;
-      System.out.println("receiver is reading/waiting for data.");
+
+      // TODO using semaphore?
+      System.out.println("receiver is waiting for release from endpoint");
+      while (!released.get()) {
+        try {
+          TimeUnit.MILLISECONDS.sleep(50);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+
+      System.out.println("receiver was released and is now reading/waiting for data.");
       while ((inputLine = in.readLine()) != null) {
         System.out.println("receiver got an input line");
         String message = Message.afterReceiving(inputLine);
@@ -42,6 +57,10 @@ public class Receiver extends Thread {
       e.printStackTrace();
     }
     System.out.println("receiver thread is terminating now");
+  }
+
+  void release() {
+    released.set(true);
   }
 
 }

@@ -3,8 +3,7 @@ package st.extreme.klingklong;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Semaphore;
 
 /**
  * Implementation of an endpoint.
@@ -12,16 +11,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class EndpointImpl implements Endpoint {
 
   private final List<MessageListener> messageListeners;
-
-  // TODO this should be global - receiver should not accept until everybody is up and running...
-  private final AtomicBoolean running;
+  private final Semaphore semaphore = new Semaphore(0, true);
 
   private Receiver receiver;
   private Sender sender;
 
   public EndpointImpl() {
     messageListeners = new ArrayList<>();
-    running = new AtomicBoolean(false);
   }
 
   @Override
@@ -29,33 +25,27 @@ public class EndpointImpl implements Endpoint {
     System.out.println("endpoint configures");
     // TODO check for invalid configuration
     receiver = new Receiver(configuration.getLocalPort(), this::messageReceived);
-    sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), this::setRunning);
+    sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), semaphore);
   }
 
   @Override
   final public void connect() throws ConnectionError {
     System.out.println("endpoint connecting ...");
-    if (!isRunning()) {
-      receiver.start();
-      sender.start();
-      // TODO use a semaphore here, otherwise messages are coming in before this method is terminated
-      while (!isRunning()) {
-        // wait for the sender callback to set running to true
-        try {
-          TimeUnit.MILLISECONDS.sleep(50);
-        } catch (InterruptedException e) {
-          throw new ConnectionError("Error while waiting for sender", e);
-        }
-      }
-      System.out.println("endpoint is now connected");
+    receiver.start();
+    sender.start();
+    try {
+      semaphore.acquire();
+      System.out.println("endpoint acquired the permit and releases receiver");
+      receiver.release();
+    } catch (InterruptedException e) {
+      throw new ConnectionError("Error while waiting for sender", e);
     }
+    System.out.println("endpoint is now connected");
   }
 
   @Override
   final public void send(String message) {
-    if (isRunning()) {
-      sender.send(message);
-    }
+    sender.send(message);
   }
 
   @Override
@@ -73,8 +63,6 @@ public class EndpointImpl implements Endpoint {
   @Override
   final public void close() throws Exception {
     System.out.println("closing endpoint");
-    // terminate the running loop
-    running.set(false);
     // remove message listeners
     messageListeners.clear();
     // stop sender (this implicitly stops the remote and closes the receiver if necessary)
@@ -82,19 +70,8 @@ public class EndpointImpl implements Endpoint {
   }
 
   final private void messageReceived(String message) {
-    if (isRunning()) {
-      System.out.println(String.format("endpoint received message '%s'", message));
-      messageListeners.forEach(listener -> listener.onMessage(message));
-    }
-  }
-
-  final private boolean isRunning() {
-    return running.get();
-  }
-
-  final private void setRunning(Boolean newRunning) {
-    System.out.println(String.format("endpoint sets running to %s", newRunning.toString()));
-    running.set(newRunning.booleanValue());
+    System.out.println(String.format("endpoint received message '%s'", message));
+    messageListeners.forEach(listener -> listener.onMessage(message));
   }
 
 }
