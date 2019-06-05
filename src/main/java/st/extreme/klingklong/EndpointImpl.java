@@ -11,22 +11,24 @@ import java.util.concurrent.Semaphore;
 public class EndpointImpl implements Endpoint {
 
   private final List<MessageListener> messageListeners;
-  private final Semaphore semaphore = new Semaphore(0, true);
-  private final Semaphore readSemaphore = new Semaphore(0, true);
+  private final Semaphore senderSemaphore;
+  private final Semaphore receiverSemaphore;
 
   private Receiver receiver;
   private Sender sender;
 
   public EndpointImpl() {
     messageListeners = new ArrayList<>();
+    senderSemaphore = new Semaphore(0, true);
+    receiverSemaphore = new Semaphore(0, true);
   }
 
   @Override
   final public void configure(Configuration configuration) throws ConfigurationException, UnknownHostException {
     System.out.println("endpoint configures");
     // TODO check for invalid configuration
-    receiver = new Receiver(configuration.getLocalPort(), this::messageReceived, readSemaphore);
-    sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), semaphore);
+    receiver = new Receiver(configuration.getLocalPort(), this::messageReceived, receiverSemaphore);
+    sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), senderSemaphore);
   }
 
   @Override
@@ -35,9 +37,9 @@ public class EndpointImpl implements Endpoint {
     receiver.start();
     sender.start();
     try {
-      semaphore.acquire();
-      System.out.println("endpoint acquired the permit and releases receiver now");
-      readSemaphore.release();
+      senderSemaphore.acquire();
+      System.out.println("endpoint acquired the sender permit and releases receiver now");
+      receiverSemaphore.release();
     } catch (InterruptedException e) {
       throw new ConnectionError("Error while waiting for sender", e);
     }

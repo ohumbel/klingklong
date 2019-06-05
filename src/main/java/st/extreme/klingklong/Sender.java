@@ -16,15 +16,15 @@ final class Sender extends Thread {
   private final InetAddress remoteHost;
   private final int sendingPort;
   private final int localReceivingPort;
-  private final Semaphore connectSemaphore;
+  private final Semaphore connectedSemaphore;
   private final AtomicBoolean running;
   private PrintWriter writer;
 
-  public Sender(InetAddress remoteHost, int sendingPort, int localReceivingPort, Semaphore connectSemaphore) throws UnknownHostException {
+  public Sender(InetAddress remoteHost, int sendingPort, int localReceivingPort, Semaphore connectedSemaphore) throws UnknownHostException {
     this.remoteHost = remoteHost;
     this.sendingPort = sendingPort;
     this.localReceivingPort = localReceivingPort;
-    this.connectSemaphore = connectSemaphore;
+    this.connectedSemaphore = connectedSemaphore;
     this.running = new AtomicBoolean(false);
   }
 
@@ -36,7 +36,7 @@ final class Sender extends Thread {
         System.out.println("sender is creating a writer to the sending port");
         // since writer is a member used for sending, we cannot embed it into a try with resources block
         writer = new PrintWriter(sendingSocket.getOutputStream(), true);
-        connectSemaphore.release();
+        connectedSemaphore.release();
         runningLoop();
       } finally {
         System.out.println("sender is closing the writer");
