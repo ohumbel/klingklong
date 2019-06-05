@@ -52,6 +52,7 @@ public class Receiver extends Thread {
       System.out.println("Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
       e.printStackTrace();
     }
+    readSemaphore.release();
     System.out.println("receiver thread is terminating now");
   }
 
