@@ -70,6 +70,7 @@ public class EndpointImpl implements Endpoint {
     messageListeners.clear();
     // stop sender (this implicitly stops the remote and closes the receiver if necessary)
     sender.close();
+    System.out.println("endpoint::close is now at its end");
   }
 
   final private void messageReceived(String message) {

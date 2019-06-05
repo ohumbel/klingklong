@@ -52,6 +52,7 @@ final class Sender extends Thread {
     } finally {
       System.out.println("sender is closing the socket");
     }
+    closedSemaphore.release();
     System.out.println("sender thread terminating");
   }
 
@@ -69,14 +70,19 @@ final class Sender extends Thread {
     send(STOP_SIGNAL);
     sendLocalSTOP();
     closedSemaphore.release();
+    try {
+      closedSemaphore.acquire();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   private void sendLocalSTOP() {
     // TODO maybe have a state somewhere who is closed already
-    System.out.println("sending local STOP signal");
+    System.out.println(String.format("sending local STOP signal to port %d", localReceivingPort));
     try (Socket localReceivingSocket = new Socket(InetAddress.getLocalHost(), localReceivingPort);
-        PrintWriter out = new PrintWriter(localReceivingSocket.getOutputStream(), true)) {
-      out.println(Message.forSending(STOP_SIGNAL));
+        PrintWriter localWriter = new PrintWriter(localReceivingSocket.getOutputStream(), true)) {
+      localWriter.println(Message.forSending(STOP_SIGNAL));
       System.out.println("sendLocalSTOP was successful");
     } catch (IOException e) {
       System.out.println("sendLocalSTOP was not successful");
