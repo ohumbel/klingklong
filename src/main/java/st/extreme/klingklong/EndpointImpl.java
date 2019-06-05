@@ -12,6 +12,7 @@ public class EndpointImpl implements Endpoint {
 
   private final List<MessageListener> messageListeners;
   private final Semaphore semaphore = new Semaphore(0, true);
+  private final Semaphore readSemaphore = new Semaphore(0, true);
 
   private Receiver receiver;
   private Sender sender;
@@ -24,7 +25,7 @@ public class EndpointImpl implements Endpoint {
   final public void configure(Configuration configuration) throws ConfigurationException, UnknownHostException {
     System.out.println("endpoint configures");
     // TODO check for invalid configuration
-    receiver = new Receiver(configuration.getLocalPort(), this::messageReceived);
+    receiver = new Receiver(configuration.getLocalPort(), this::messageReceived, readSemaphore);
     sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), semaphore);
   }
 
@@ -35,8 +36,8 @@ public class EndpointImpl implements Endpoint {
     sender.start();
     try {
       semaphore.acquire();
-      System.out.println("endpoint acquired the permit and releases receiver");
-      receiver.release();
+      System.out.println("endpoint acquired the permit and releases receiver now");
+      readSemaphore.release();
     } catch (InterruptedException e) {
       throw new ConnectionError("Error while waiting for sender", e);
     }
