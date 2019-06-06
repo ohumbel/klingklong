@@ -1,5 +1,7 @@
 package st.extreme.klingklong;
 
+import static st.extreme.klingklong.util.Horn.honk;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -41,11 +43,11 @@ final class Sender extends Thread {
         }
       }
     } catch (Exception e) {
-      System.err.println(String.format("connection error with remote host %s", remoteHost.getHostName()));
+      honk(String.format("connection error with remote host %s", remoteHost.getHostName()));
       e.printStackTrace();
     }
     closedSemaphore.release();
-    System.out.println("sender thread is terminating now");
+    honk("sender thread is terminating now");
   }
 
   void send(String message) {
@@ -83,7 +85,7 @@ final class Sender extends Thread {
         try {
           if (secondsWaited % 5 == 0) {
             String info = String.format("waiting for remote %s/%d to accept a connection", remoteHost.getHostName(), sendingPort);
-            System.out.println(info);
+            honk(info);
           }
           TimeUnit.SECONDS.sleep(1);
           secondsWaited++;

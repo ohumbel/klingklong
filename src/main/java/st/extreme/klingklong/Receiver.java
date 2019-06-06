@@ -1,5 +1,7 @@
 package st.extreme.klingklong;
 
+import static st.extreme.klingklong.util.Horn.honk;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -40,11 +42,11 @@ public class Receiver extends Thread {
         }
       }
     } catch (IOException e) {
-      System.out.println("Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
+      honk("Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
       e.printStackTrace();
     }
     readSemaphore.release();
-    System.out.println("receiver thread is terminating now");
+    honk("receiver thread is terminating now");
   }
 
 }
