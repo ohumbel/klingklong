@@ -15,6 +15,8 @@ import st.extreme.klingklong.Type;
 
 public class JVMWorker implements MessageListener {
 
+  private static final String STOP_MESSAGE = "STOP";
+
   private final Type type;
   private final AtomicBoolean atWork;
   private final AtomicInteger workCount;
@@ -28,27 +30,25 @@ public class JVMWorker implements MessageListener {
   @Override
   public void onMessage(String message) {
     // TODO: check how to stop really
-    System.out.println(String.format("worker got a message '%s'", message));
-    if ("STOP".equals(message)) {
+    System.out.println(String.format("worker got a message: '%s'", message));
+    if (STOP_MESSAGE.equals(message)) {
       stopWork();
     }
   }
 
   void workAndCommunicate() throws Exception {
-    System.out.println("worker is creating the endpoint");
     try (Endpoint endpoint = createEndpoint()) {
       endpoint.addMessageListener(this);
       endpoint.connect();
-      System.out.println("worker's endpoint is now connected\n---------------------------");
+      System.out.println("endpoint is now connected");
       while (atWork.get()) {
         endpoint.send(String.format("I am doing some work (%d)", workCount.get()));
         work();
       }
       endpoint.send("My work is done soon");
       TimeUnit.SECONDS.sleep(1);
-      endpoint.send("bye");
+      endpoint.send(STOP_MESSAGE);
     }
-    System.out.println("worker finally closed the endpoint");
   }
 
   private Endpoint createEndpoint() throws ConfigurationException, UnknownHostException {
@@ -77,13 +77,13 @@ public class JVMWorker implements MessageListener {
     } else {
       TimeUnit.SECONDS.sleep(2);
     }
-    if (actualWorkCount > 2) {
+    if (actualWorkCount > 3) {
       stopWork();
     }
   }
 
   private void stopWork() {
-    System.out.println("worker: stopping");
+    System.out.println("worker is stopping now");
     atWork.set(false);
   }
 

@@ -29,44 +29,30 @@ final class Sender extends Thread {
 
   @Override
   public void run() {
-    System.out.println(String.format("sender is creating a sending socket on port %d", sendingPort));
     try (Socket sendingSocket = waitForRemoteAcceptance()) {
       try {
-        System.out.println("sender is creating a writer to the sending port");
         // since writer is a member used for sending, we cannot embed it into a try with resources block
         writer = new PrintWriter(sendingSocket.getOutputStream(), true);
         connectedSemaphore.release();
         runningLoop();
       } finally {
-        System.out.println("sender is closing the writer");
         if (writer != null) {
           writer.close();
         }
       }
-    } catch (UnknownHostException e) {
-      System.err.println("Don't know about host " + remoteHost.getHostName());
+    } catch (Exception e) {
+      System.err.println(String.format("connection error with remote host %s", remoteHost.getHostName()));
       e.printStackTrace();
-    } catch (IOException e) {
-      System.err.println("Couldn't get I/O for the connection to " + remoteHost.getHostName());
-      e.printStackTrace();
-    } finally {
-      System.out.println("sender is closing the socket");
     }
     closedSemaphore.release();
-    System.out.println("sender thread terminating");
+    System.out.println("sender thread is terminating now");
   }
 
   void send(String message) {
-    if (STOP_SIGNAL.equals(message)) {
-      System.out.println("sending STOP signal");
-    } else {
-      System.out.println(String.format("sending '%s'", message));
-    }
     writer.println(Message.forSending(message));
   }
 
   void close() {
-    System.out.println("sender starts closing");
     send(STOP_SIGNAL);
     sendLocalSTOP();
     closedSemaphore.release();
@@ -78,14 +64,11 @@ final class Sender extends Thread {
   }
 
   private void sendLocalSTOP() {
-    // TODO maybe have a state somewhere who is closed already
-    System.out.println(String.format("sending local STOP signal to port %d", localReceivingPort));
     try (Socket localReceivingSocket = new Socket(InetAddress.getLocalHost(), localReceivingPort);
         PrintWriter localWriter = new PrintWriter(localReceivingSocket.getOutputStream(), true)) {
       localWriter.println(Message.forSending(STOP_SIGNAL));
-      System.out.println("sendLocalSTOP was successful");
     } catch (IOException e) {
-      System.out.println("sendLocalSTOP was not successful");
+      // ignore
     }
   }
 
@@ -99,7 +82,7 @@ final class Sender extends Thread {
         // remote not ready yet, wait a bit
         try {
           if (secondsWaited % 5 == 0) {
-            String info = String.format("sender is waiting for remote %s/%d to accept a connection", remoteHost.getHostName(), sendingPort);
+            String info = String.format("waiting for remote %s/%d to accept a connection", remoteHost.getHostName(), sendingPort);
             System.out.println(info);
           }
           TimeUnit.SECONDS.sleep(1);
@@ -109,7 +92,6 @@ final class Sender extends Thread {
         }
       }
     }
-    System.out.println("sender is not waiting any more");
     return sendingSocket;
   }
 
@@ -119,7 +101,6 @@ final class Sender extends Thread {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    System.out.println("sender ends running loop");
   }
 
 }
