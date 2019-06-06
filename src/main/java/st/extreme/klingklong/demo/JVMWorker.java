@@ -16,23 +16,23 @@ import st.extreme.klingklong.Type;
 public class JVMWorker implements MessageListener {
 
   private static final String STOP_MESSAGE = "STOP";
+  private static final int MINIMUM_WORK = 3;
 
   private final Type type;
-  private final AtomicBoolean atWork;
   private final AtomicInteger workCount;
+  private final AtomicBoolean isRemoteListening;
 
   public JVMWorker(Type type) {
     this.type = type;
-    this.atWork = new AtomicBoolean(true);
-    this.workCount = new AtomicInteger(0);
+    workCount = new AtomicInteger(0);
+    isRemoteListening = new AtomicBoolean(true);
   }
 
   @Override
   public void onMessage(String message) {
-    // TODO: check how to stop really
-    System.out.println(String.format("worker got a message: '%s'", message));
+    System.out.println(String.format("got a message: '%s'", message));
     if (STOP_MESSAGE.equals(message)) {
-      stopWork();
+      isRemoteListening.set(false);
     }
   }
 
@@ -41,13 +41,17 @@ public class JVMWorker implements MessageListener {
       endpoint.addMessageListener(this);
       endpoint.connect();
       System.out.println("endpoint is now connected");
-      while (atWork.get()) {
+      while (workCount.get() <= MINIMUM_WORK) {
         endpoint.send(String.format("I am doing some work (%d)", workCount.get()));
-        work();
+        workOneUnit();
       }
-      endpoint.send("My work is done soon");
+      if (isRemoteListening.get()) {
+        endpoint.send("My work is done soon");
+      }
       TimeUnit.SECONDS.sleep(1);
-      endpoint.send(STOP_MESSAGE);
+      if (isRemoteListening.get()) {
+        endpoint.send(STOP_MESSAGE);
+      }
     }
   }
 
@@ -68,23 +72,14 @@ public class JVMWorker implements MessageListener {
     return endpoint;
   }
 
-  private void work() throws InterruptedException {
-    int actualWorkCount = workCount.incrementAndGet();
-    // for testing ?
+  private void workOneUnit() throws InterruptedException {
+    workCount.incrementAndGet();
     double rand = Math.random();
     if (rand <= 0.5) {
       TimeUnit.SECONDS.sleep(1);
     } else {
       TimeUnit.SECONDS.sleep(2);
     }
-    if (actualWorkCount > 3) {
-      stopWork();
-    }
-  }
-
-  private void stopWork() {
-    System.out.println("worker is stopping now");
-    atWork.set(false);
   }
 
 }
