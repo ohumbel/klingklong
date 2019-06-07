@@ -48,7 +48,7 @@ public final class Horn {
   private static class OneLineFormatter extends Formatter {
     @Override
     public String format(LogRecord record) {
-      return String.format("%s\n", record.getMessage());
+      return String.format("[klingklong] %s\n", record.getMessage());
     }
   }
 
