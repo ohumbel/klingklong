@@ -10,6 +10,8 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import st.extreme.klingklong.util.Horn.Temperature;
+
 final class Sender extends Thread {
 
   static final String STOP_SIGNAL = "__^ 3B@?)8Eu6.x6u2t?7?cw#2e+2W8)P?R3 ^__";
@@ -43,11 +45,11 @@ final class Sender extends Thread {
         }
       }
     } catch (Exception e) {
-      honk(String.format("connection error with remote host %s", remoteHost.getHostName()));
+      honk(Temperature.COSY, String.format("connection error with remote host %s", remoteHost.getHostName()));
       e.printStackTrace();
     }
     closedSemaphore.release();
-    honk("sender thread is terminating now");
+    honk(Temperature.COSY, "sender thread is terminating now");
   }
 
   void send(String message) {
@@ -85,7 +87,7 @@ final class Sender extends Thread {
         try {
           if (secondsWaited % 5 == 0) {
             String info = String.format("waiting for remote %s/%d to accept a connection", remoteHost.getHostName(), sendingPort);
-            honk(info);
+            honk(Temperature.COSY, info);
           }
           TimeUnit.SECONDS.sleep(1);
           secondsWaited++;

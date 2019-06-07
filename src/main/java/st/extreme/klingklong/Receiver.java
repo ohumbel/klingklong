@@ -11,6 +11,8 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
+import st.extreme.klingklong.util.Horn.Temperature;
+
 public class Receiver extends Thread {
   private final int listeningPort;
   private final Consumer<String> messageConsumer;
@@ -42,11 +44,11 @@ public class Receiver extends Thread {
         }
       }
     } catch (IOException e) {
-      honk("Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
+      honk(Temperature.COSY, "Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
       e.printStackTrace();
     }
     readSemaphore.release();
-    honk("receiver thread is terminating now");
+    honk(Temperature.COSY, "receiver thread is terminating now");
   }
 
 }

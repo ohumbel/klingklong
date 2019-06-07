@@ -1,6 +1,7 @@
 package st.extreme.klingklong.demo;
 
 import static st.extreme.klingklong.util.Horn.honk;
+import static st.extreme.klingklong.util.Horn.Temperature.COSY;
 
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +14,7 @@ import st.extreme.klingklong.Endpoint;
 import st.extreme.klingklong.Kling;
 import st.extreme.klingklong.Klong;
 import st.extreme.klingklong.MessageListener;
-import st.extreme.klingklong.Type;
+import st.extreme.klingklong.Type;;
 
 public class JVMWorker implements MessageListener {
 
@@ -32,7 +33,7 @@ public class JVMWorker implements MessageListener {
 
   @Override
   public void onMessage(String message) {
-    honk(String.format("got a message: '%s'", message));
+    honk(COSY, String.format("got a message: '%s'", message));
     if (STOP_MESSAGE.equals(message)) {
       isRemoteListening.set(false);
     }
@@ -42,7 +43,7 @@ public class JVMWorker implements MessageListener {
     try (Endpoint endpoint = createEndpoint()) {
       endpoint.addMessageListener(this);
       endpoint.connect();
-      honk("endpoint is now connected");
+      honk(COSY, "endpoint is now connected");
       while (workCount.get() <= MINIMUM_WORK) {
         endpoint.send(String.format("I am doing some work (%d)", workCount.get()));
         workOneUnit();
@@ -61,11 +62,11 @@ public class JVMWorker implements MessageListener {
     final Endpoint endpoint;
     switch (type) {
     case KLING:
-      honk("creating kling");
+      honk(COSY, "creating kling");
       endpoint = Kling.create();
       break;
     case KLONG:
-      honk("creating klong");
+      honk(COSY, "creating klong");
       endpoint = Klong.create();
       break;
     default:

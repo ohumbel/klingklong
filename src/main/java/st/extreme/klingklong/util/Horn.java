@@ -15,8 +15,34 @@ public final class Horn {
     Logger.getLogger("").getHandlers()[0].setFormatter(new OneLineFormatter());
   }
 
-  public static void honk(String message) {
-    LOGGER.log(Level.INFO, message);
+  public static void honk(Temperature temperature, String message) {
+    switch (temperature) {
+    case FROZEN:
+      break;
+    case COSY:
+      LOGGER.log(Level.INFO, message);
+      break;
+    case HOT:
+      LOGGER.log(Level.ALL, message);
+      break;
+    }
+  }
+
+  public enum Temperature {
+    /**
+     * The temperature is so frozen that there is no output at all.
+     */
+    FROZEN,
+
+    /**
+     * The temperature is cosy, so a moderate amount of output is issued.
+     */
+    COSY,
+
+    /**
+     * The temperature is hot, because of a lot of output.
+     */
+    HOT;
   }
 
   private static class OneLineFormatter extends Formatter {

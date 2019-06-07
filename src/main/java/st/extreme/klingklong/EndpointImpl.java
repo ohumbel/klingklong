@@ -1,6 +1,7 @@
 package st.extreme.klingklong;
 
 import static st.extreme.klingklong.util.Horn.honk;
+import static st.extreme.klingklong.util.Horn.Temperature.COSY;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class EndpointImpl implements Endpoint {
 
   @Override
   final public void connect() throws ConnectionError {
-    honk("endpoint is connecting ...");
+    honk(COSY, "endpoint is connecting ...");
     receiver.start();
     sender.start();
     try {
@@ -71,7 +72,7 @@ public class EndpointImpl implements Endpoint {
       receiver.interrupt(); // this magically lets the receiver read pending lines
       receiverSemaphore.acquire();
     }
-    honk("endpoint is now closed");
+    honk(COSY, "endpoint is now closed");
   }
 
   final private void messageReceived(String message) {
