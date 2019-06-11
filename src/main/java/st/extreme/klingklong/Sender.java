@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import st.extreme.klingklong.util.Horn.Temperature;
+import st.extreme.klingklong.util.Temperature;
 
 final class Sender extends Thread {
 

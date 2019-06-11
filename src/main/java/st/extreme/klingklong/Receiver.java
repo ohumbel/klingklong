@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
-import st.extreme.klingklong.util.Horn.Temperature;
+import st.extreme.klingklong.util.Temperature;
 
 public class Receiver extends Thread {
   private final int listeningPort;

@@ -1,7 +1,7 @@
 package st.extreme.klingklong;
 
 import static st.extreme.klingklong.util.Horn.honk;
-import static st.extreme.klingklong.util.Horn.Temperature.COSY;
+import static st.extreme.klingklong.util.Temperature.COSY;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
