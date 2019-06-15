@@ -1,8 +1,13 @@
 package st.extreme.klingklong.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -11,15 +16,19 @@ import org.junit.Test;
 public class HornTest {
 
   private String originalTemeratureProperty;
+  private TestFormattingListener formattingListener;
 
   @Before
   public void setUp() {
     originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
+    formattingListener = new TestFormattingListener();
+    OneLineFormatter.addFormattingListener(formattingListener);
   }
 
   @After
   public void tearDown() {
     System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
+    OneLineFormatter.removeAllListeners();
   }
 
   @Test
@@ -40,4 +49,58 @@ public class HornTest {
     assertEquals(Temperature.HOT, Horn.systemTemperature());
   }
 
+  @Test
+  public void testHonk_accept_HOT() {
+    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
+    Horn.honk(Temperature.HOT, "hot message");
+    assertTrue(formattingListener.contains("hot message"));
+    Horn.honk(Temperature.COSY, "cosy message");
+    assertTrue(formattingListener.contains("cosy message"));
+    Horn.honk(Temperature.FROZEN, "frozen message");
+    assertFalse(formattingListener.contains("frozen message"));
+  }
+
+  @Test
+  public void testHonk_accept_COSY() {
+    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.COSY.name());
+    Horn.honk(Temperature.HOT, "hot message");
+    assertFalse(formattingListener.contains("hot message"));
+    Horn.honk(Temperature.COSY, "cosy message");
+    assertTrue(formattingListener.contains("cosy message"));
+    Horn.honk(Temperature.FROZEN, "frozen message");
+    assertFalse(formattingListener.contains("frozen message"));
+  }
+
+  @Test
+  public void testHonk_accept_FROZEN() {
+    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
+    Horn.honk(Temperature.HOT, "hot message");
+    assertFalse(formattingListener.contains("hot message"));
+    Horn.honk(Temperature.COSY, "cosy message");
+    assertFalse(formattingListener.contains("cosy message"));
+    Horn.honk(Temperature.FROZEN, "frozen message");
+    assertFalse(formattingListener.contains("frozen message"));
+  }
+
+  @Test
+  public void testHonkThrowable() {
+    fail("implement");
+  }
+
+  private static final class TestFormattingListener implements FormattingListener {
+    private List<String> formattedMessages;
+
+    public TestFormattingListener() {
+      formattedMessages = new ArrayList<>();
+    }
+
+    @Override
+    public void onFormatting(String formatted) {
+      formattedMessages.add(formatted);
+    }
+
+    boolean contains(String message) {
+      return formattedMessages.stream().filter(msg -> msg.contains(message)).findFirst().isPresent();
+    }
+  }
 }

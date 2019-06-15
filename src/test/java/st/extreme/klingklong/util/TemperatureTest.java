@@ -16,18 +16,18 @@ public class TemperatureTest {
   }
 
   @Test
-  public void testIsHotterThan() {
-    assertTrue(Temperature.FROZEN.isHotterThanOrEqualTo(Temperature.FROZEN));
-    assertFalse(Temperature.FROZEN.isHotterThanOrEqualTo(Temperature.COSY));
-    assertFalse(Temperature.FROZEN.isHotterThanOrEqualTo(Temperature.HOT));
+  public void testBelowOrEqualTo() {
+    assertTrue(Temperature.FROZEN.isBelowOrEqualTo(Temperature.FROZEN));
+    assertTrue(Temperature.FROZEN.isBelowOrEqualTo(Temperature.COSY));
+    assertTrue(Temperature.FROZEN.isBelowOrEqualTo(Temperature.HOT));
 
-    assertTrue(Temperature.COSY.isHotterThanOrEqualTo(Temperature.FROZEN));
-    assertTrue(Temperature.COSY.isHotterThanOrEqualTo(Temperature.COSY));
-    assertFalse(Temperature.COSY.isHotterThanOrEqualTo(Temperature.HOT));
+    assertFalse(Temperature.COSY.isBelowOrEqualTo(Temperature.FROZEN));
+    assertTrue(Temperature.COSY.isBelowOrEqualTo(Temperature.COSY));
+    assertTrue(Temperature.COSY.isBelowOrEqualTo(Temperature.HOT));
 
-    assertTrue(Temperature.HOT.isHotterThanOrEqualTo(Temperature.FROZEN));
-    assertTrue(Temperature.HOT.isHotterThanOrEqualTo(Temperature.COSY));
-    assertTrue(Temperature.HOT.isHotterThanOrEqualTo(Temperature.HOT));
+    assertFalse(Temperature.HOT.isBelowOrEqualTo(Temperature.FROZEN));
+    assertFalse(Temperature.HOT.isBelowOrEqualTo(Temperature.COSY));
+    assertTrue(Temperature.HOT.isBelowOrEqualTo(Temperature.HOT));
   }
 
 }

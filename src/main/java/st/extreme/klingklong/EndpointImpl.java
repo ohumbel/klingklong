@@ -2,6 +2,7 @@ package st.extreme.klingklong;
 
 import static st.extreme.klingklong.util.Horn.honk;
 import static st.extreme.klingklong.util.Temperature.COSY;
+import static st.extreme.klingklong.util.Temperature.HOT;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class EndpointImpl implements Endpoint {
 
   @Override
   final public void close() throws Exception {
+    honk(HOT, "endpoint closing");
     // remove message listeners
     messageListeners.clear();
     // stop sender (this implicitly stops the remote)

@@ -3,9 +3,7 @@ package st.extreme.klingklong.util;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Formatter;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public final class Horn {
@@ -17,34 +15,26 @@ public final class Horn {
     LOGGER = Logger.getLogger(Horn.class.getName());
     // set our formatter on the console handler of the root logger
     Logger.getLogger("").getHandlers()[0].setFormatter(new OneLineFormatter());
+    loadProperties();
   }
 
   public static void honk(Temperature temperature, String message) {
     honk(temperature, message, null);
   }
 
-  public static void honk(Temperature requestedTemperature, String message, Throwable throwable) {
-    final Temperature currentTemperature;
-    if (requestedTemperature.isHotterThanOrEqualTo(systemTemperature())) {
-      currentTemperature = requestedTemperature;
-    } else {
-      currentTemperature = Temperature.FROZEN;
-    }
-    final Level level;
-    switch (currentTemperature) {
-    case COSY:
-      level = Level.INFO;
-      break;
-    case HOT:
-      level = Level.ALL;
-      break;
-    default:
-      level = Level.OFF;
-    }
-    if (throwable != null) {
-      LOGGER.log(level, message, throwable);
-    } else {
-      LOGGER.log(level, message);
+  public static void honk(Temperature temperature, String message, Throwable throwable) {
+    if (temperature.isBelowOrEqualTo(systemTemperature())) {
+      switch (temperature) {
+      case COSY:
+        internalLog(Level.INFO, message, throwable);
+        break;
+      case HOT:
+        internalLog(Level.SEVERE, message, throwable);
+        break;
+      default:
+        // no logging at all if frozen
+        break;
+      }
     }
   }
 
@@ -67,10 +57,11 @@ public final class Horn {
     return Temperature.valueOf(System.getProperty(TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name()));
   }
 
-  private static class OneLineFormatter extends Formatter {
-    @Override
-    public String format(LogRecord record) {
-      return String.format("[klingklong] %s\n", record.getMessage());
+  private static void internalLog(Level level, String message, Throwable throwable) {
+    if (throwable != null) {
+      LOGGER.log(level, message, throwable);
+    } else {
+      LOGGER.log(level, message);
     }
   }
 
