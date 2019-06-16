@@ -64,14 +64,13 @@ public class EndpointImpl implements Endpoint {
 
   @Override
   final public void close() throws Exception {
-    honk(HOT, "endpoint closing");
+    honk(HOT, "endpoint is closing");
     // remove message listeners
     messageListeners.clear();
     // stop sender (this implicitly stops the remote)
     sender.close();
     // force closing of receiver
     if (receiver.isAlive()) {
-      receiver.interrupt(); // this magically lets the receiver read pending lines
       receiverSemaphore.acquire();
     }
     honk(COSY, "endpoint is now closed");

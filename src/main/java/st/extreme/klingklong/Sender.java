@@ -71,6 +71,7 @@ final class Sender extends Thread {
     try (Socket localReceivingSocket = new Socket(InetAddress.getLocalHost(), localReceivingPort);
         PrintWriter localWriter = new PrintWriter(localReceivingSocket.getOutputStream(), true)) {
       localWriter.println(Message.forSending(STOP_SIGNAL));
+      localWriter.flush();
     } catch (IOException e) {
       // ignore
     }
