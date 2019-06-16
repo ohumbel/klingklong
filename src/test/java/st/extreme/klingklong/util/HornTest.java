@@ -3,7 +3,6 @@ package st.extreme.klingklong.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,7 +83,14 @@ public class HornTest {
 
   @Test
   public void testHonkThrowable() {
-    fail("implement");
+    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.COSY.name());
+    Horn.honk(Temperature.COSY, "a message with an exception", new Exception("the exception"));
+    String expectedStart = "[klingklong] a message with an exception:\n" + //
+        "[klingklong] java.lang.Exception: the exception\n" + //
+        "\tat st.extreme.klingklong.util.HornTest.testHonkThrowable(";
+    String start = formattingListener.formattedMessages.get(0).substring(0, expectedStart.length());
+    assertEquals(expectedStart, start);
+    assertTrue(start.startsWith(expectedStart));
   }
 
   private static final class TestFormattingListener implements FormattingListener {
