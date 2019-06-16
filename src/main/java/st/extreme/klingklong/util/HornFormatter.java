@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-class OneLineFormatter extends Formatter {
+class HornFormatter extends Formatter {
 
   private static final List<FormattingListener> formattingListeners = new ArrayList<>();
 

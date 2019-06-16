@@ -21,13 +21,13 @@ public class HornTest {
   public void setUp() {
     originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
     formattingListener = new TestFormattingListener();
-    OneLineFormatter.addFormattingListener(formattingListener);
+    HornFormatter.addFormattingListener(formattingListener);
   }
 
   @After
   public void tearDown() {
     System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
-    OneLineFormatter.removeAllListeners();
+    HornFormatter.removeAllListeners();
   }
 
   @Test

@@ -14,7 +14,7 @@ public final class Horn {
   static {
     LOGGER = Logger.getLogger(Horn.class.getName());
     // set our formatter on the console handler of the root logger
-    Logger.getLogger("").getHandlers()[0].setFormatter(new OneLineFormatter());
+    Logger.getLogger("").getHandlers()[0].setFormatter(new HornFormatter());
     loadProperties();
   }
 
