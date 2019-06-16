@@ -1,6 +1,7 @@
 package st.extreme.klingklong;
 
 import static st.extreme.klingklong.util.Horn.honk;
+import static st.extreme.klingklong.util.Temperature.COSY;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,8 +10,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
-import st.extreme.klingklong.util.Temperature;
 
 final class Sender extends Thread {
 
@@ -45,11 +44,11 @@ final class Sender extends Thread {
         }
       }
     } catch (Exception e) {
-      honk(Temperature.COSY, String.format("connection error with remote host %s", remoteHost.getHostName()));
+      honk(COSY, String.format("connection error with remote host %s", remoteHost.getHostName()));
       e.printStackTrace();
     }
     closedSemaphore.release();
-    honk(Temperature.COSY, "sender thread is terminating now");
+    honk(COSY, "sender thread is terminating now");
   }
 
   void send(String message) {
@@ -88,7 +87,7 @@ final class Sender extends Thread {
         try {
           if (secondsWaited % 5 == 0) {
             String info = String.format("waiting for remote %s/%d to accept a connection", remoteHost.getHostName(), sendingPort);
-            honk(Temperature.COSY, info);
+            honk(COSY, info);
           }
           TimeUnit.SECONDS.sleep(1);
           secondsWaited++;

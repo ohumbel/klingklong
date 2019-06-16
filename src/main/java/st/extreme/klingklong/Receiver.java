@@ -1,6 +1,8 @@
 package st.extreme.klingklong;
 
 import static st.extreme.klingklong.util.Horn.honk;
+import static st.extreme.klingklong.util.Temperature.COSY;
+import static st.extreme.klingklong.util.Temperature.HOT;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +12,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
-
-import st.extreme.klingklong.util.Temperature;
 
 public class Receiver extends Thread {
   private final int listeningPort;
@@ -38,17 +38,18 @@ public class Receiver extends Thread {
       while ((inputLine = in.readLine()) != null) {
         String message = Message.afterReceiving(inputLine);
         if (Sender.STOP_SIGNAL.equals(message)) {
+          honk(HOT, "receiver got STOP signal");
           break;
         } else {
           messageConsumer.accept(message);
         }
       }
     } catch (IOException e) {
-      honk(Temperature.COSY, "Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
+      honk(COSY, "Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
       e.printStackTrace();
     }
     readSemaphore.release();
-    honk(Temperature.COSY, "receiver thread is terminating now");
+    honk(COSY, "receiver thread is terminating now");
   }
 
 }
