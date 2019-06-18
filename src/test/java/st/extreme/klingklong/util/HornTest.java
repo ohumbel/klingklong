@@ -5,8 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -88,25 +86,8 @@ public class HornTest {
     String expectedStart = "[klingklong] a message with an exception:\n" + //
         "[klingklong] java.lang.Exception: the exception\n" + //
         "\tat st.extreme.klingklong.util.HornTest.testHonkThrowable(";
-    String start = formattingListener.formattedMessages.get(0).substring(0, expectedStart.length());
+    String start = formattingListener.getFormattedMessages().get(0).substring(0, expectedStart.length());
     assertEquals(expectedStart, start);
     assertTrue(start.startsWith(expectedStart));
-  }
-
-  private static final class TestFormattingListener implements FormattingListener {
-    private List<String> formattedMessages;
-
-    public TestFormattingListener() {
-      formattedMessages = new ArrayList<>();
-    }
-
-    @Override
-    public void onFormatting(String formatted) {
-      formattedMessages.add(formatted);
-    }
-
-    boolean contains(String message) {
-      return formattedMessages.stream().filter(msg -> msg.contains(message)).findFirst().isPresent();
-    }
   }
 }

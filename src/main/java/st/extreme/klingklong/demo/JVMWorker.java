@@ -39,7 +39,7 @@ public class JVMWorker implements MessageListener {
     }
   }
 
-  void workAndCommunicate() throws Exception {
+  public void workAndCommunicate() throws Exception {
     try (Endpoint endpoint = createEndpoint()) {
       endpoint.addMessageListener(this);
       endpoint.connect();
@@ -55,6 +55,7 @@ public class JVMWorker implements MessageListener {
       if (isRemoteListening.get()) {
         endpoint.send(STOP_MESSAGE);
       }
+      TimeUnit.MILLISECONDS.sleep(500);
     }
   }
 

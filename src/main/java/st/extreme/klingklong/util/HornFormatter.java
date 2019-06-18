@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-class HornFormatter extends Formatter {
+public class HornFormatter extends Formatter {
 
   private static final List<FormattingListener> formattingListeners = new ArrayList<>();
 
@@ -33,11 +33,11 @@ class HornFormatter extends Formatter {
     return formatted;
   }
 
-  static void addFormattingListener(FormattingListener formattingListener) {
+  public static void addFormattingListener(FormattingListener formattingListener) {
     formattingListeners.add(formattingListener);
   }
 
-  static void removeAllListeners() {
+  public static void removeAllListeners() {
     formattingListeners.clear();
   }
 
