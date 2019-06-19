@@ -2,7 +2,6 @@ package st.extreme.klingklong;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -11,7 +10,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import st.extreme.klingklong.demo.JVMWorker;
+import st.extreme.klingklong.demo.JVM1;
+import st.extreme.klingklong.demo.JVM2;
 import st.extreme.klingklong.util.Horn;
 import st.extreme.klingklong.util.HornFormatter;
 import st.extreme.klingklong.util.Temperature;
@@ -53,6 +53,7 @@ public class IntegralCoverageTest {
 
     List<String> formattedMessages = formattingListener.getFormattedMessages();
     assertTrue(formattedMessages.size() >= 24);
+    assertEquals(2, formattingListener.occurrences("starting worker on JVM"));
     assertTrue(formattingListener.contains("creating kling"));
     assertTrue(formattingListener.contains("creating klong"));
     assertEquals(2, formattingListener.occurrences("endpoint is connecting ..."));
@@ -71,24 +72,14 @@ public class IntegralCoverageTest {
   private static final class WorkerThread1 extends Thread {
     @Override
     public void run() {
-      JVMWorker worker = new JVMWorker(Type.KLING);
-      try {
-        worker.workAndCommunicate();
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
+      assertEquals(0, JVM1.work());
     }
   }
 
   private static final class WorkerThread2 extends Thread {
     @Override
     public void run() {
-      JVMWorker worker = new JVMWorker(Type.KLONG);
-      try {
-        worker.workAndCommunicate();
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
+      assertEquals(0, JVM2.work());
     }
   }
 }
