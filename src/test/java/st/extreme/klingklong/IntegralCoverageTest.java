@@ -56,7 +56,6 @@ public class IntegralCoverageTest {
     assertTrue(formattingListener.contains("creating kling"));
     assertTrue(formattingListener.contains("creating klong"));
     assertEquals(2, formattingListener.occurrences("endpoint is connecting ..."));
-    assertTrue(formattingListener.contains("waiting for remote"));
     assertEquals(2, formattingListener.occurrences("endpoint is now connected"));
     assertEquals(2, formattingListener.occurrences("got a message: 'I am doing some work (0)'"));
     assertEquals(2, formattingListener.occurrences("got a message: 'I am doing some work (1)'"));
