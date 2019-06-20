@@ -17,3 +17,14 @@ Next steps would be to provide a good reference how to use it.
 ----
 
 Web sockets are considered as overengineering for this purpose. But if you are interested in a small demo, you can use the `DocServer` and `DocClient` on the `web.socket.demo` branch for reference / as starting point.
+
+
+----
+
+## TODO
+ - Let `Sender` and `Receiver` implement an interface, to increase testability?
+ - Is it possible to encrypt/decrypt the messages?
+ - Rename properties with the package prefix, to be sure they do not conflict with other system properties
+ - Implement and test the property hierarchy (VM arguments, user home, ours)
+ - Implement checks for invalid configurations
+ 
