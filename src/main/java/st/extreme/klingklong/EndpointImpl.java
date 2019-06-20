@@ -5,8 +5,8 @@ import static st.extreme.klingklong.util.Temperature.COSY;
 import static st.extreme.klingklong.util.Temperature.HOT;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -14,7 +14,7 @@ import java.util.concurrent.Semaphore;
  */
 public class EndpointImpl implements Endpoint {
 
-  private final List<MessageListener> messageListeners;
+  private final Set<MessageListener> messageListeners;
   private final Semaphore senderSemaphore;
   private final Semaphore receiverSemaphore;
 
@@ -22,7 +22,7 @@ public class EndpointImpl implements Endpoint {
   private Sender sender;
 
   public EndpointImpl() {
-    messageListeners = new ArrayList<>();
+    messageListeners = new HashSet<>();
     senderSemaphore = new Semaphore(0, true);
     receiverSemaphore = new Semaphore(0, true);
   }
@@ -35,7 +35,7 @@ public class EndpointImpl implements Endpoint {
   }
 
   @Override
-  final public void connect() throws ConnectionError {
+  final public void connect() throws ConnectionException {
     honk(COSY, "endpoint is connecting ...");
     receiver.start();
     sender.start();
@@ -43,7 +43,7 @@ public class EndpointImpl implements Endpoint {
       senderSemaphore.acquire();
       receiverSemaphore.release();
     } catch (InterruptedException e) {
-      throw new ConnectionError("Error while waiting for sender", e);
+      throw new ConnectionException("Error while waiting for sender", e);
     }
   }
 
@@ -68,15 +68,19 @@ public class EndpointImpl implements Endpoint {
     // remove message listeners
     messageListeners.clear();
     // stop sender (this implicitly stops the remote)
-    sender.close();
-    // force closing of receiver
-    if (receiver.isAlive()) {
-      receiverSemaphore.acquire();
+    if (sender != null) {
+      sender.close();
+    }
+    // close receiver
+    if (receiver != null) {
+      if (receiver.isAlive()) {
+        receiverSemaphore.acquire();
+      }
     }
     honk(COSY, "endpoint is now closed");
   }
 
-  final private void messageReceived(String message) {
+  final void messageReceived(String message) {
     messageListeners.forEach(listener -> listener.onMessage(message));
   }
 

@@ -29,11 +29,7 @@ public class Receiver extends Thread {
     try (ServerSocket serverSocket = new ServerSocket(listeningPort);
         Socket listeningSocket = serverSocket.accept();
         BufferedReader in = new BufferedReader(new InputStreamReader(listeningSocket.getInputStream()));) {
-      try {
-        readSemaphore.acquire();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      readSemaphore.acquireUninterruptibly();
       String inputLine;
       while ((inputLine = in.readLine()) != null) {
         String message = Message.afterReceiving(inputLine);

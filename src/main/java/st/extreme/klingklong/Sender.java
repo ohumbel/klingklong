@@ -59,11 +59,7 @@ final class Sender extends Thread {
     send(STOP_SIGNAL);
     sendLocalSTOP();
     closedSemaphore.release();
-    try {
-      closedSemaphore.acquire();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    closedSemaphore.acquireUninterruptibly();
   }
 
   private void sendLocalSTOP() {
@@ -100,11 +96,7 @@ final class Sender extends Thread {
   }
 
   private void runningLoop() {
-    try {
-      closedSemaphore.acquire();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    closedSemaphore.acquireUninterruptibly();
   }
 
 }
