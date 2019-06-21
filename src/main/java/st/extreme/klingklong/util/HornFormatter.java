@@ -13,17 +13,18 @@ public class HornFormatter extends Formatter {
   private static final List<FormattingListener> formattingListeners = new ArrayList<>();
 
   @Override
-  public String format(LogRecord record) {
+  public String format(LogRecord logRecord) {
     StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append(String.format("[klingklong] %s", record.getMessage()));
-    Throwable throwable = record.getThrown();
+    stringBuilder.append(String.format("[klingklong] %s", logRecord.getMessage()));
+    Throwable throwable = logRecord.getThrown();
     if (throwable != null) {
       stringBuilder.append(":\n");
       stringBuilder.append("[klingklong] ");
       try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
         throwable.printStackTrace(printWriter);
         stringBuilder.append(stringWriter.toString());
-      } catch (IOException e) { // ignore
+      } catch (IOException e) {
+        // ignore, because this cannot happen on a StringWriter
       }
     } else {
       stringBuilder.append('\n');
@@ -40,5 +41,4 @@ public class HornFormatter extends Formatter {
   public static void removeAllListeners() {
     formattingListeners.clear();
   }
-
 }
