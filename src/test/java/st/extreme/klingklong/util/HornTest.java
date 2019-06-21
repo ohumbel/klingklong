@@ -2,6 +2,7 @@ package st.extreme.klingklong.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -91,5 +92,10 @@ public class HornTest {
     String start = formattingListener.getFormattedMessages().get(0).substring(0, expectedStart.length());
     assertEquals(expectedStart, start);
     assertTrue(start.startsWith(expectedStart));
+  }
+
+  @Test
+  public void testCreation() {
+    assertNotNull(new Horn()); // coverage, we salute you
   }
 }
