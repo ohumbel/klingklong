@@ -3,7 +3,7 @@ package st.extreme.klingklong.demo;
 import static st.extreme.klingklong.util.Horn.honk;
 import static st.extreme.klingklong.util.Temperature.COSY;
 
-import st.extreme.klingklong.Type;;
+import st.extreme.klingklong.Type;
 
 public class JVM2 {
 
