@@ -22,7 +22,6 @@ Web sockets are considered as overengineering for this purpose. But if you are i
 ----
 
 ## TODO
- - Let `Sender` and `Receiver` implement an interface, to increase testability?
  - Real life test by using two child processes (jvm's)
  - Is it possible to encrypt/decrypt the messages?
  - Rename properties with the package prefix, to be sure they do not conflict with other system properties

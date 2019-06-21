@@ -30,8 +30,8 @@ public class EndpointImpl implements Endpoint {
   @Override
   final public void configure(Configuration configuration) throws ConfigurationException, UnknownHostException {
     // TODO check for invalid configuration
-    receiver = new Receiver(configuration.getLocalPort(), this::messageReceived, receiverSemaphore);
-    sender = new Sender(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), senderSemaphore);
+    receiver = new ReceiverImpl(configuration.getLocalPort(), this::messageReceived, receiverSemaphore);
+    sender = new SenderImpl(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), senderSemaphore);
   }
 
   @Override
