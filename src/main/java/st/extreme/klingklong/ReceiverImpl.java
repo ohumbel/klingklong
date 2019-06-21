@@ -44,8 +44,8 @@ public class ReceiverImpl extends Thread implements Receiver {
       honk(COSY, "Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
       e.printStackTrace();
     }
-    readSemaphore.release();
     honk(COSY, "receiver thread is terminating now");
+    readSemaphore.release();
   }
 
 }

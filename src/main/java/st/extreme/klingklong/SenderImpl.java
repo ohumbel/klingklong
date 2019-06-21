@@ -46,8 +46,8 @@ final class SenderImpl extends Thread implements Sender {
       honk(COSY, String.format("connection error with remote host %s", remoteHost.getHostName()));
       e.printStackTrace();
     }
-    closedSemaphore.release();
     honk(COSY, "sender thread is terminating now");
+    closedSemaphore.release();
   }
 
   @Override
