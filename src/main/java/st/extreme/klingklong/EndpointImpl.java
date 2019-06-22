@@ -4,7 +4,6 @@ import static st.extreme.klingklong.util.Horn.honk;
 import static st.extreme.klingklong.util.Temperature.COSY;
 import static st.extreme.klingklong.util.Temperature.HOT;
 
-import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
@@ -28,7 +27,7 @@ public class EndpointImpl implements Endpoint {
   }
 
   @Override
-  final public void configure(Configuration configuration) throws ConfigurationException, UnknownHostException {
+  final public void configure(Configuration configuration) throws ConfigurationException {
     // TODO check for invalid configuration
     receiver = new ReceiverImpl(configuration.getLocalPort(), this::messageReceived, receiverSemaphore);
     sender = new SenderImpl(configuration.getRemoteHost(), configuration.getRemotePort(), configuration.getLocalPort(), senderSemaphore);

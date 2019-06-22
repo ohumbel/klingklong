@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
@@ -18,7 +17,7 @@ public class ReceiverImpl extends Thread implements Receiver {
   private final Consumer<String> messageConsumer;
   private final Semaphore readSemaphore;
 
-  public ReceiverImpl(int listeningPort, Consumer<String> messageConsumer, Semaphore readSemaphore) throws UnknownHostException {
+  public ReceiverImpl(int listeningPort, Consumer<String> messageConsumer, Semaphore readSemaphore) {
     this.listeningPort = listeningPort;
     this.messageConsumer = messageConsumer;
     this.readSemaphore = readSemaphore;
