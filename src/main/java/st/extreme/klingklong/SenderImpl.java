@@ -20,8 +20,7 @@ final class SenderImpl extends Thread implements Sender {
   private final Semaphore closedSemaphore;
   private PrintWriter writer;
 
-  public SenderImpl(InetAddress remoteHost, int sendingPort, int localReceivingPort, Semaphore connectedSemaphore)
-      throws UnknownHostException {
+  public SenderImpl(InetAddress remoteHost, int sendingPort, int localReceivingPort, Semaphore connectedSemaphore) {
     this.remoteHost = remoteHost;
     this.sendingPort = sendingPort;
     this.localReceivingPort = localReceivingPort;
