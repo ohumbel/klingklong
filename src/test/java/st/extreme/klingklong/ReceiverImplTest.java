@@ -35,7 +35,8 @@ public class ReceiverImplTest {
   }
 
   /**
-   * By blocking the socket we provoke a BindException at the very beginning of the run() method.
+   * By blocking the socket we provoke a {@code BindException} (address already in use) <br>
+   * at the very beginning of the {@code run()} method.
    * <p>
    * This allows us to cover the catch clause.
    * 
