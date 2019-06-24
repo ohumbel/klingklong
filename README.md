@@ -22,7 +22,6 @@ Web sockets are considered as overengineering for this purpose. But if you are i
 ----
 
 ## TODO
- - Coverage EndpointImpl
  - Coverage Horn (with load properties)
  - Real life test by using two child processes (jvm's)
  - Is it possible to encrypt/decrypt the messages?

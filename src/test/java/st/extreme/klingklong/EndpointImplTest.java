@@ -1,21 +1,20 @@
 package st.extreme.klingklong;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class EndpointImplTest {
-
-  @Test
-  @Ignore
-  public void testEndpointImpl() {
-    fail("Not yet implemented");
-  }
 
   @Test
   @Ignore
@@ -25,13 +24,13 @@ public class EndpointImplTest {
 
   @Test
   @Ignore
-  public void testConnect() {
+  public void testSend() {
     fail("Not yet implemented");
   }
 
   @Test
   @Ignore
-  public void testSend() {
+  public void testClose() {
     fail("Not yet implemented");
   }
 
@@ -76,9 +75,64 @@ public class EndpointImplTest {
   }
 
   @Test
-  @Ignore
-  public void testClose() {
-    fail("Not yet implemented");
+  public void testConnect_InterruptedException() throws Exception {
+    EndpointImpl endpoint = new EndpointImpl();
+    injectTestSenderAndReceiver(endpoint);
+    final AtomicBoolean connectionException = new AtomicBoolean(false);
+    Thread connectorThread = new Thread() {
+      @Override
+      public void run() {
+        try {
+          endpoint.connect();
+          fail("ConnectionException expected");
+        } catch (ConnectionException e) {
+          connectionException.set(true);
+          ;
+          assertEquals("Error while waiting for sender", e.getMessage());
+        }
+      }
+    };
+    connectorThread.start();
+    TimeUnit.MILLISECONDS.sleep(500);
+    connectorThread.interrupt();
+    TimeUnit.MILLISECONDS.sleep(500);
+    assertTrue(connectionException.get());
+  }
+
+  private void injectTestSenderAndReceiver(EndpointImpl endpoint) throws Exception {
+    Field senderField = EndpointImpl.class.getDeclaredField("sender");
+    Field receiverField = EndpointImpl.class.getDeclaredField("receiver");
+    assertNotNull(senderField);
+    assertNotNull(receiverField);
+    senderField.setAccessible(true);
+    receiverField.setAccessible(true);
+    senderField.set(endpoint, new TestSender());
+    receiverField.set(endpoint, new TestReceiver());
+  }
+
+  private static final class TestSender implements Sender {
+    @Override
+    public void start() {
+    }
+
+    @Override
+    public void send(String message) {
+    }
+
+    @Override
+    public void close() {
+    }
+  }
+
+  private static final class TestReceiver implements Receiver {
+    @Override
+    public void start() {
+    }
+
+    @Override
+    public boolean isAlive() {
+      return false;
+    }
   }
 
   private static final class TestMessageListener implements MessageListener {
