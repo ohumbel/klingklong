@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +40,8 @@ final class SenderImpl extends Thread implements Sender {
           writer.close();
         }
       }
-    } catch (Exception e) {
+    } catch (IOException | InterruptedException e) {
+      System.out.println("caught an exception: " + e.getMessage());
       honk(COSY, String.format("connection error with remote host %s", remoteHost.getHostName()));
       e.printStackTrace();
     }
@@ -72,7 +72,7 @@ final class SenderImpl extends Thread implements Sender {
     }
   }
 
-  private Socket waitForRemoteAcceptance() throws UnknownHostException {
+  private Socket waitForRemoteAcceptance() throws InterruptedException {
     Socket sendingSocket = null;
     int secondsWaited = 0;
     while (sendingSocket == null) {
@@ -80,16 +80,12 @@ final class SenderImpl extends Thread implements Sender {
         sendingSocket = new Socket(remoteHost, sendingPort);
       } catch (IOException ioe) {
         // remote not ready yet, wait a bit
-        try {
-          if (secondsWaited % 5 == 0) {
-            String info = String.format("waiting for remote %s/%d to accept a connection", remoteHost.getHostName(), sendingPort);
-            honk(COSY, info);
-          }
-          TimeUnit.SECONDS.sleep(1);
-          secondsWaited++;
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+        if (secondsWaited % 5 == 0) {
+          String info = String.format("waiting for remote %s/%d to accept a connection", remoteHost.getHostName(), sendingPort);
+          honk(COSY, info);
         }
+        TimeUnit.SECONDS.sleep(1);
+        secondsWaited++;
       }
     }
     return sendingSocket;
