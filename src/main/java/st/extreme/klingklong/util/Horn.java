@@ -41,8 +41,8 @@ public final class Horn {
 
   static void loadProperties() {
     Properties properties = new Properties();
-    try (InputStream s = Horn.class.getResourceAsStream("/klingklong.properties")) {
-      properties.load(s);
+    try (InputStream propertiesStream = Horn.class.getResourceAsStream("/klingklong.properties")) {
+      properties.load(propertiesStream);
     } catch (Exception e) {
       honk(Temperature.HOT, "unable to load klinklong.properties", e);
     }
