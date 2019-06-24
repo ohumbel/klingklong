@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class HornTest {
@@ -31,7 +30,6 @@ public class HornTest {
   }
 
   @Test
-  @Ignore // TODO properly implement for a gradle test run
   public void testLoadProperties() throws IOException {
     Horn.loadProperties();
     assertEquals(Temperature.COSY.name(), System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME));
