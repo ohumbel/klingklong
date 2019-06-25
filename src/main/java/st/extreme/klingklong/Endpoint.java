@@ -24,9 +24,9 @@ public interface Endpoint extends AutoCloseable {
    * <p>
    * This method blocks until the remote accepts the connection.
    * 
-   * @throws ConnectionError if the remote endpoint cannot be reached.
+   * @throws ConnectionException if the remote endpoint cannot be reached.
    */
-  public void connect() throws ConnectionError;
+  public void connect() throws ConnectionException;
 
   /**
    * Send a message.

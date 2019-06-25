@@ -28,6 +28,10 @@ public class TemperatureTest {
     assertFalse(Temperature.HOT.isBelowOrEqualTo(Temperature.FROZEN));
     assertFalse(Temperature.HOT.isBelowOrEqualTo(Temperature.COSY));
     assertTrue(Temperature.HOT.isBelowOrEqualTo(Temperature.HOT));
+
+    assertFalse(Temperature.FROZEN.isBelowOrEqualTo(null));
+    assertFalse(Temperature.COSY.isBelowOrEqualTo(null));
+    assertFalse(Temperature.HOT.isBelowOrEqualTo(null));
   }
 
 }

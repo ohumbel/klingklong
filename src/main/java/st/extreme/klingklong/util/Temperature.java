@@ -17,16 +17,17 @@ public enum Temperature {
   HOT;
 
   boolean isBelowOrEqualTo(Temperature other) {
-    switch (other) {
-    case FROZEN:
-      return FROZEN.equals(this);
-    case COSY:
-      return !HOT.equals(this);
-    case HOT:
-      return true;
-    default:
-      return false;
+    if (other != null) {
+      switch (other) {
+      case FROZEN:
+        return FROZEN.equals(this);
+      case COSY:
+        return !HOT.equals(this);
+      case HOT:
+        return true;
+      }
     }
+    return false;
   }
 
 }

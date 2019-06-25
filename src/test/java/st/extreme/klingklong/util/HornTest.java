@@ -2,38 +2,45 @@ package st.extreme.klingklong.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class HornTest {
 
+  private Path originalPrpoertiesPath;
+  private List<String> originalLines;
   private String originalTemeratureProperty;
   private TestFormattingListener formattingListener;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
+    URL originalPropertiesURL = Horn.class.getResource("/klingklong.properties");
+    assertNotNull(originalPropertiesURL);
+    originalPrpoertiesPath = Paths.get(originalPropertiesURL.toURI());
+    originalLines = Files.readAllLines(originalPrpoertiesPath);
     originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
     formattingListener = new TestFormattingListener();
     HornFormatter.addFormattingListener(formattingListener);
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws Exception {
     System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
     HornFormatter.removeAllListeners();
-  }
-
-  @Test
-  @Ignore // TODO properly implement for a gradle test run
-  public void testLoadProperties() throws IOException {
-    Horn.loadProperties();
-    assertEquals(Temperature.COSY.name(), System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME));
+    Files.write(originalPrpoertiesPath, originalLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
   }
 
   @Test
@@ -92,4 +99,43 @@ public class HornTest {
     assertEquals(expectedStart, start);
     assertTrue(start.startsWith(expectedStart));
   }
+
+  @Test
+  public void testCreation() {
+    assertNotNull(new Horn()); // coverage, we salute you
+  }
+
+  @Test
+  public void testLoadProperties() throws IOException {
+    Horn.loadProperties();
+    assertEquals(Temperature.COSY.name(), System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME));
+  }
+
+  @Test
+  public void testLoadProperties_HOT() throws IOException {
+    List<String> newLines = new ArrayList<>();
+    originalLines.forEach(line -> {
+      if (line.startsWith(Horn.TEMPERATURE_PROPERTY_NAME)) {
+        line = Horn.TEMPERATURE_PROPERTY_NAME.concat("=").concat(Temperature.HOT.name());
+      }
+      newLines.add(line);
+    });
+    assertEquals(originalLines.size(), newLines.size());
+    Files.write(originalPrpoertiesPath, newLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+    Horn.loadProperties();
+    assertEquals(Temperature.HOT.name(), System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME));
+  }
+
+  @Test
+  public void testLoadProperties_Exception() throws Exception {
+    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
+    List<String> newLines = new ArrayList<>();
+    originalLines.forEach(line -> newLines.add(line));
+    assertEquals(originalLines.size(), newLines.size());
+    newLines.add("test.breaking.property=\\u2");
+    Files.write(originalPrpoertiesPath, newLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+    Horn.loadProperties();
+    assertTrue(formattingListener.contains("unable to load klinklong.properties"));
+  }
+
 }
