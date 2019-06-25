@@ -40,7 +40,7 @@ public class SenderImplTest {
     sender.start();
     TimeUnit.MILLISECONDS.sleep(5500); // wait > 5 seconds to cover the honk condition
     ((SenderImpl) sender).interrupt(); // provoke an interrupted exception during sleep
-    TimeUnit.MICROSECONDS.sleep(500);
+    TimeUnit.MICROSECONDS.sleep(1300);
     assertTrue(formattingListener.contains("waiting for remote"));
     assertTrue(formattingListener.contains("connection error with remote host"));
   }
