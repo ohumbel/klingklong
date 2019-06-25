@@ -41,7 +41,6 @@ final class SenderImpl extends Thread implements Sender {
         }
       }
     } catch (IOException | InterruptedException e) {
-      System.out.println("caught an exception: " + e.getMessage());
       honk(COSY, String.format("connection error with remote host %s", remoteHost.getHostName()));
       e.printStackTrace();
     }
