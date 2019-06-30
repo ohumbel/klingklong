@@ -20,7 +20,7 @@ import org.junit.Test;
 
 public class HornTest {
 
-  private Path originalPrpoertiesPath;
+  private Path originalPropertiesPath;
   private List<String> originalLines;
   private String originalTemeratureProperty;
   private TestFormattingListener formattingListener;
@@ -29,8 +29,8 @@ public class HornTest {
   public void setUp() throws Exception {
     URL originalPropertiesURL = Horn.class.getResource("/klingklong.properties");
     assertNotNull(originalPropertiesURL);
-    originalPrpoertiesPath = Paths.get(originalPropertiesURL.toURI());
-    originalLines = Files.readAllLines(originalPrpoertiesPath);
+    originalPropertiesPath = Paths.get(originalPropertiesURL.toURI());
+    originalLines = Files.readAllLines(originalPropertiesPath);
     originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
     formattingListener = new TestFormattingListener();
     HornFormatter.addFormattingListener(formattingListener);
@@ -40,7 +40,7 @@ public class HornTest {
   public void tearDown() throws Exception {
     System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
     HornFormatter.removeAllListeners();
-    Files.write(originalPrpoertiesPath, originalLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+    Files.write(originalPropertiesPath, originalLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
   }
 
   @Test
@@ -121,7 +121,7 @@ public class HornTest {
       newLines.add(line);
     });
     assertEquals(originalLines.size(), newLines.size());
-    Files.write(originalPrpoertiesPath, newLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+    Files.write(originalPropertiesPath, newLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
     Horn.loadProperties();
     assertEquals(Temperature.HOT.name(), System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME));
   }
@@ -133,7 +133,7 @@ public class HornTest {
     originalLines.forEach(line -> newLines.add(line));
     assertEquals(originalLines.size(), newLines.size());
     newLines.add("test.breaking.property=\\u2");
-    Files.write(originalPrpoertiesPath, newLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+    Files.write(originalPropertiesPath, newLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
     Horn.loadProperties();
     assertTrue(formattingListener.contains("unable to load klinklong.properties"));
   }
