@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public final class Horn {
 
-  public static final String TEMPERATURE_PROPERTY_NAME = "klingklong.horn.temperature";
+  public static final String TEMPERATURE_PROPERTY_NAME = "st.extreme.klingklong.horn.temperature";
 
   private static final Logger LOGGER;
 
