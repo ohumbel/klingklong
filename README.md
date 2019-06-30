@@ -22,7 +22,6 @@ Web sockets are considered as overengineering for this purpose. But if you are i
 ----
 
 ## TODO
- - Real life test by using two child processes (jvm's)
  - Rename properties with the package prefix, to be sure they do not conflict with other system properties
  - Implement and test the property hierarchy (VM arguments, user home, ours)
  - Implement checks for invalid configurations
