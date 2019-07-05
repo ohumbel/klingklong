@@ -29,14 +29,18 @@ public class IntegralCoverageTest {
 
   @Before
   public void setUp() {
-    originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
+    originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME);
     formattingListener = new TestFormattingListener();
     HornFormatter.addFormattingListener(formattingListener);
   }
 
   @After
   public void tearDown() {
-    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
+    if (originalTemeratureProperty == null) {
+      System.getProperties().remove(Horn.TEMPERATURE_PROPERTY_NAME);
+    } else {
+      System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
+    }
     HornFormatter.removeAllListeners();
   }
 
