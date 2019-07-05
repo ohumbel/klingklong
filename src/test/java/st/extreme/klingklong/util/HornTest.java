@@ -31,14 +31,18 @@ public class HornTest {
     assertNotNull(originalPropertiesURL);
     originalPropertiesPath = Paths.get(originalPropertiesURL.toURI());
     originalLines = Files.readAllLines(originalPropertiesPath);
-    originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
+    originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME);
     formattingListener = new TestFormattingListener();
     HornFormatter.addFormattingListener(formattingListener);
   }
 
   @After
   public void tearDown() throws Exception {
-    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
+    if (originalTemeratureProperty == null) {
+      System.getProperties().remove(Horn.TEMPERATURE_PROPERTY_NAME);
+    } else {
+      System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
+    }
     HornFormatter.removeAllListeners();
     Files.write(originalPropertiesPath, originalLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
   }
@@ -127,6 +131,13 @@ public class HornTest {
   }
 
   @Test
+  public void testLoadProperties_System_before_builtin() {
+    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
+    Horn.loadProperties();
+    assertEquals(Temperature.FROZEN.name(), System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME));
+  }
+
+  @Test
   public void testLoadProperties_Exception() throws Exception {
     System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
     List<String> newLines = new ArrayList<>();
@@ -136,6 +147,19 @@ public class HornTest {
     Files.write(originalPropertiesPath, newLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
     Horn.loadProperties();
     assertTrue(formattingListener.contains("unable to load klinklong.properties"));
+  }
+
+  @Test
+  public void testSetSystemProperty() {
+    final String testSystemProperetyName = "st.extreme.klingklong.test.property";
+    try {
+      Horn.setSystemProperty(testSystemProperetyName, "initial");
+      assertEquals("initial", System.getProperty(testSystemProperetyName));
+      Horn.setSystemProperty(testSystemProperetyName, "overwrite");
+      assertEquals("initial", System.getProperty(testSystemProperetyName));
+    } finally {
+      System.getProperties().remove(testSystemProperetyName);
+    }
   }
 
 }

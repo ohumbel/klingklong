@@ -50,7 +50,15 @@ public final class Horn {
     Set<Object> keys = properties.keySet();
     for (Object object : keys) {
       String key = (String) object;
-      System.setProperty(key, properties.getProperty(key));
+      setSystemProperty(key, properties.getProperty(key));
+    }
+  }
+
+  static void setSystemProperty(String propertyName, String propertyValue) {
+    // if the system property is already set, do not overwrite it
+    String actualValue = System.getProperty(propertyName);
+    if (actualValue == null) {
+      System.setProperty(propertyName, propertyValue);
     }
   }
 
