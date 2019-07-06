@@ -1,6 +1,5 @@
 package st.extreme.klingklong;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -102,6 +101,7 @@ public class IntegralTest {
     return processBuilder;
   }
 
+  // TODO: handle the current case
   private void assertOutput(Path outputPath, Set<String> messagesAtLeastOnce) throws Exception {
     String line;
     List<String> lines = Files.readAllLines(outputPath);
@@ -144,49 +144,70 @@ public class IntegralTest {
     line = lines.get(index);
     assertTrue(line.contains("got a message: 'I am doing some work (3)'"));
 
-    index++;
-    line = lines.get(index);
-    if (line.contains(DONE_SOON_MESSAGE)) {
-      messagesAtLeastOnce.add(DONE_SOON_MESSAGE);
-      index++;
-    }
+    // possible output 1 afer work:
+    // [klingklong] got a message: 'My work is done soon'
+    // [klingklong] got a message: 'STOP'
+    // [klingklong] receiver got STOP signal
+    // [klingklong] receiver thread is terminating now
+    // [klingklong] endpoint is closing
+    // [klingklong] sender thread is terminating now
+    // [klingklong] endpoint is now closed
 
-    line = lines.get(index);
-    if (line.contains(STOP_MESSAGE)) {
-      messagesAtLeastOnce.add(STOP_MESSAGE);
-      index++;
-    }
+    // possible output 2 after work:
+    // [klingklong] endpoint is closing
+    // [klingklong] sender thread is terminating now
+    // [klingklong] receiver got STOP signal
+    // [klingklong] receiver thread is terminating now
+    // [klingklong] endpoint is now closed
 
+    // equired messages are:
+    // - endpoint is closing
+    // - receiver got STOP signal
+    // - sender thread is terminating now
+    // - receiver thread is terminating now
+    // but the sequence cannot be predicted
+    // and at the last position:
+    // - endpoint is now closed
+
+    boolean closing = false;
     boolean senderTerminates = false;
     boolean receiverTerminates = false;
+    boolean gotStopSignal = false;
 
-    line = lines.get(index);
-    assertTrue(line.endsWith("thread is terminating now"));
-    if (line.contains("sender")) {
-      senderTerminates = true;
-    }
-    if (line.contains("receiver")) {
-      receiverTerminates = true;
+    while (index < lines.size() - 2) {
+      index++;
+      line = lines.get(index);
+      if (line.contains(DONE_SOON_MESSAGE)) {
+        messagesAtLeastOnce.add(DONE_SOON_MESSAGE);
+      }
+      if (line.contains(STOP_MESSAGE)) {
+        messagesAtLeastOnce.add(STOP_MESSAGE);
+      }
+      if (line.contains("endpoint is closing")) {
+        closing = true;
+      }
+      if (line.contains("receiver got STOP signal")) {
+        gotStopSignal = true;
+      }
+      if (line.contains("thread is terminating now")) {
+        if (line.contains("sender")) {
+          senderTerminates = true;
+        }
+        if (line.contains("receiver")) {
+          receiverTerminates = true;
+        }
+      }
     }
 
-    index++;
-    line = lines.get(index);
-    assertTrue(line.endsWith("thread is terminating now"));
-    if (line.contains("sender")) {
-      senderTerminates = true;
-    }
-    if (line.contains("receiver")) {
-      receiverTerminates = true;
-    }
-
+    assertTrue("no closing message found", closing);
+    assertTrue("receiver got no STOP signal", gotStopSignal);
     assertTrue("no sender terminating message found", senderTerminates);
     assertTrue("no receiver terminating message found", receiverTerminates);
 
+    // this always should be the last one
     index++;
     line = lines.get(index);
     assertTrue(line.endsWith("endpoint is now closed"));
-
-    assertEquals("expected no more lines", lines.size(), index + 1);
   }
 
   private enum ProcessConfig {
