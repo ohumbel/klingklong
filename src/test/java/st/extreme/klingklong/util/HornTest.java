@@ -4,6 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static st.extreme.klingklong.util.PropertyLoader.TEMPERATURE_PROPERTY_NAME;
+import static st.extreme.klingklong.util.Temperature.COSY;
+import static st.extreme.klingklong.util.Temperature.FROZEN;
+import static st.extreme.klingklong.util.Temperature.HOT;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,53 +29,53 @@ public class HornTest {
 
   @Test
   public void testSystemTemperature() {
-    System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
-    assertEquals(Temperature.FROZEN, Horn.systemTemperature());
+    System.setProperty(TEMPERATURE_PROPERTY_NAME, FROZEN.name());
+    assertEquals(FROZEN, Horn.systemTemperature());
 
-    System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.COSY.name());
-    assertEquals(Temperature.COSY, Horn.systemTemperature());
+    System.setProperty(TEMPERATURE_PROPERTY_NAME, COSY.name());
+    assertEquals(COSY, Horn.systemTemperature());
 
-    System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
-    assertEquals(Temperature.HOT, Horn.systemTemperature());
+    System.setProperty(TEMPERATURE_PROPERTY_NAME, HOT.name());
+    assertEquals(HOT, Horn.systemTemperature());
   }
 
   @Test
   public void testHonk_accept_HOT() {
-    System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
-    Horn.honk(Temperature.HOT, "hot message");
+    System.setProperty(TEMPERATURE_PROPERTY_NAME, HOT.name());
+    Horn.honk(HOT, "hot message");
     assertTrue(formattingListener.contains("hot message"));
-    Horn.honk(Temperature.COSY, "cosy message");
+    Horn.honk(COSY, "cosy message");
     assertTrue(formattingListener.contains("cosy message"));
-    Horn.honk(Temperature.FROZEN, "frozen message");
+    Horn.honk(FROZEN, "frozen message");
     assertFalse(formattingListener.contains("frozen message"));
   }
 
   @Test
   public void testHonk_accept_COSY() {
-    System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.COSY.name());
-    Horn.honk(Temperature.HOT, "hot message");
+    System.setProperty(TEMPERATURE_PROPERTY_NAME, COSY.name());
+    Horn.honk(HOT, "hot message");
     assertFalse(formattingListener.contains("hot message"));
-    Horn.honk(Temperature.COSY, "cosy message");
+    Horn.honk(COSY, "cosy message");
     assertTrue(formattingListener.contains("cosy message"));
-    Horn.honk(Temperature.FROZEN, "frozen message");
+    Horn.honk(FROZEN, "frozen message");
     assertFalse(formattingListener.contains("frozen message"));
   }
 
   @Test
   public void testHonk_accept_FROZEN() {
-    System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
-    Horn.honk(Temperature.HOT, "hot message");
+    System.setProperty(TEMPERATURE_PROPERTY_NAME, FROZEN.name());
+    Horn.honk(HOT, "hot message");
     assertFalse(formattingListener.contains("hot message"));
-    Horn.honk(Temperature.COSY, "cosy message");
+    Horn.honk(COSY, "cosy message");
     assertFalse(formattingListener.contains("cosy message"));
-    Horn.honk(Temperature.FROZEN, "frozen message");
+    Horn.honk(FROZEN, "frozen message");
     assertFalse(formattingListener.contains("frozen message"));
   }
 
   @Test
   public void testHonkThrowable() {
-    System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.COSY.name());
-    Horn.honk(Temperature.COSY, "a message with an exception", new Exception("the exception"));
+    System.setProperty(TEMPERATURE_PROPERTY_NAME, COSY.name());
+    Horn.honk(COSY, "a message with an exception", new Exception("the exception"));
     String expectedStart = "[klingklong] a message with an exception:\n" + //
         "[klingklong] java.lang.Exception: the exception\n" + //
         "\tat st.extreme.klingklong.util.HornTest.testHonkThrowable(";

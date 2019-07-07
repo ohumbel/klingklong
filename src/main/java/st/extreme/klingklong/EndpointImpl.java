@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
+import st.extreme.klingklong.util.PropertyLoader;
+
 /**
  * Implementation of an endpoint.
  */
@@ -19,6 +21,10 @@ public class EndpointImpl implements Endpoint {
 
   private Receiver receiver;
   private Sender sender;
+
+  static {
+    PropertyLoader.loadProperties();
+  }
 
   public EndpointImpl() {
     messageListeners = new HashSet<>();
@@ -35,7 +41,7 @@ public class EndpointImpl implements Endpoint {
 
   @Override
   final public void connect() throws ConnectionException {
-    honk(COSY, "endpoint is connecting ...");
+    honk(HOT, "endpoint is connecting ...");
     receiver.start();
     sender.start();
     try {

@@ -1,7 +1,6 @@
 package st.extreme.klingklong;
 
 import static st.extreme.klingklong.util.Horn.honk;
-import static st.extreme.klingklong.util.Temperature.COSY;
 import static st.extreme.klingklong.util.Temperature.HOT;
 
 import java.io.BufferedReader;
@@ -40,10 +39,10 @@ public class ReceiverImpl extends Thread implements Receiver {
         }
       }
     } catch (IOException e) {
-      honk(COSY, "Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
+      honk(HOT, "Exception caught when trying to listen on port " + listeningPort + " or listening for a connection");
       e.printStackTrace();
     }
-    honk(COSY, "receiver thread is terminating now");
+    honk(HOT, "receiver thread is terminating now");
     readSemaphore.release();
   }
 

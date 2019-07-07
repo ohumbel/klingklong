@@ -2,6 +2,8 @@ package st.extreme.klingklong;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static st.extreme.klingklong.util.PropertyLoader.TEMPERATURE_PROPERTY_NAME;
+import static st.extreme.klingklong.util.Temperature.HOT;
 
 import java.io.File;
 import java.net.URL;
@@ -18,7 +20,6 @@ import org.junit.Test;
 
 import st.extreme.klingklong.util.Horn;
 import st.extreme.klingklong.util.PropertyLoader;
-import st.extreme.klingklong.util.Temperature;
 
 /**
  * Test a real life situation: start up two virtual machines and let them talk to each other
@@ -41,7 +42,7 @@ public class IntegralTest {
   @Before
   public void setUp() throws Exception {
     // determine class path elements for the subprocesses
-    URL propertiesURL = Horn.class.getResource("/klingklong.properties");
+    URL propertiesURL = Horn.class.getResource("/".concat(PropertyLoader.BUILTIN_PROPERTY_FILE_NAME));
     assertNotNull(propertiesURL);
     Path propertiesPath = Paths.get(propertiesURL.toURI());
     Path parentPath = propertiesPath.getParent();
@@ -94,7 +95,7 @@ public class IntegralTest {
     ProcessBuilder processBuilder = new ProcessBuilder();
     processBuilder.redirectOutput(processConfig.getOutputPath().toFile());
     processBuilder.redirectErrorStream(true);
-    String temperatureProperty = "-D".concat(PropertyLoader.TEMPERATURE_PROPERTY_NAME).concat("=").concat(Temperature.HOT.name());
+    String temperatureProperty = "-D".concat(TEMPERATURE_PROPERTY_NAME).concat("=").concat(HOT.name());
     String classpath = resourcesPath.toString().concat(File.pathSeparator) //
         .concat(mainPath.toString()).concat(File.pathSeparator) //
         .concat(testPath.toString());
@@ -109,10 +110,6 @@ public class IntegralTest {
     assertTrue("expected at least 11 lines, but only got " + lines.size() + ":\n" + lines, lines.size() >= 11);
 
     int index = 0;
-    line = lines.get(index);
-    assertTrue(line.contains("starting worker on JVM"));
-
-    index++;
     line = lines.get(index);
     assertTrue(line.contains("creating kling") || line.contains("creating klong"));
     index++;

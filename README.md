@@ -22,7 +22,6 @@ Web sockets are considered as overengineering for this purpose. But if you are i
 ----
 
 ## TODO
- - Implement and test the property hierarchy (VM arguments, user home, ours)
  - Implement checks for invalid configurations
  - Improve documentation
  - Is it possible to encrypt/decrypt the messages?

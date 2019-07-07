@@ -1,5 +1,7 @@
 package st.extreme.klingklong.util;
 
+import static st.extreme.klingklong.util.PropertyLoader.TEMPERATURE_PROPERTY_NAME;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,6 +13,7 @@ public final class Horn {
     LOGGER = Logger.getLogger(Horn.class.getName());
     // set our formatter on the console handler of the root logger
     Logger.getLogger("").getHandlers()[0].setFormatter(new HornFormatter());
+    PropertyLoader.loadProperties();
   }
 
   public static void honk(Temperature temperature, String message) {
@@ -34,7 +37,7 @@ public final class Horn {
   }
 
   static Temperature systemTemperature() {
-    return Temperature.valueOf(System.getProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name()));
+    return Temperature.valueOf(System.getProperty(TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name()));
   }
 
   private static void internalLog(Level level, String message, Throwable throwable) {

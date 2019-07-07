@@ -63,11 +63,11 @@ public class JVMWorker implements MessageListener {
     final Endpoint endpoint;
     switch (type) {
     case KLING:
-      honk(COSY, "creating kling");
+      honk(COSY, "creating kling for JVM worker");
       endpoint = Kling.create();
       break;
     case KLONG:
-      honk(COSY, "creating klong");
+      honk(COSY, "creating klong for JVM worker");
       endpoint = Klong.create();
       break;
     default:

@@ -2,6 +2,7 @@ package st.extreme.klingklong;
 
 import static st.extreme.klingklong.util.Horn.honk;
 import static st.extreme.klingklong.util.Temperature.COSY;
+import static st.extreme.klingklong.util.Temperature.HOT;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -44,7 +45,7 @@ final class SenderImpl extends Thread implements Sender {
       honk(COSY, String.format("connection error with remote host %s", remoteHost.getHostName()));
       e.printStackTrace();
     }
-    honk(COSY, "sender thread is terminating now");
+    honk(HOT, "sender thread is terminating now");
     closedSemaphore.release();
   }
 

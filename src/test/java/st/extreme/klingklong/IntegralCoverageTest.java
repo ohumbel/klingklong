@@ -2,6 +2,8 @@ package st.extreme.klingklong;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static st.extreme.klingklong.util.PropertyLoader.TEMPERATURE_PROPERTY_NAME;
+import static st.extreme.klingklong.util.Temperature.HOT;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -13,8 +15,6 @@ import org.junit.Test;
 import st.extreme.klingklong.demo.JVM1;
 import st.extreme.klingklong.demo.JVM2;
 import st.extreme.klingklong.util.HornFormatter;
-import st.extreme.klingklong.util.PropertyLoader;
-import st.extreme.klingklong.util.Temperature;
 import st.extreme.klingklong.util.TestFormattingListener;
 
 /**
@@ -29,7 +29,7 @@ public class IntegralCoverageTest {
 
   @Before
   public void setUp() {
-    originalTemeratureProperty = System.getProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME);
+    originalTemeratureProperty = System.getProperty(TEMPERATURE_PROPERTY_NAME);
     formattingListener = new TestFormattingListener();
     HornFormatter.addFormattingListener(formattingListener);
   }
@@ -37,16 +37,16 @@ public class IntegralCoverageTest {
   @After
   public void tearDown() {
     if (originalTemeratureProperty == null) {
-      System.getProperties().remove(PropertyLoader.TEMPERATURE_PROPERTY_NAME);
+      System.getProperties().remove(TEMPERATURE_PROPERTY_NAME);
     } else {
-      System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
+      System.setProperty(TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
     }
     HornFormatter.removeAllListeners();
   }
 
   @Test
   public void testTowEndpoints() throws InterruptedException {
-    System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
+    System.setProperty(TEMPERATURE_PROPERTY_NAME, HOT.name());
     WorkerThread1 workerThread1 = new WorkerThread1();
     WorkerThread2 workerThread2 = new WorkerThread2();
     workerThread1.start();
@@ -57,9 +57,8 @@ public class IntegralCoverageTest {
 
     List<String> formattedMessages = formattingListener.getFormattedMessages();
     assertTrue(formattedMessages.size() >= 24);
-    assertEquals(2, formattingListener.occurrences("starting worker on JVM"));
-    assertTrue(formattingListener.contains("creating kling"));
-    assertTrue(formattingListener.contains("creating klong"));
+    assertTrue(formattingListener.contains("creating kling for JVM worker"));
+    assertTrue(formattingListener.contains("creating klong for JVM worker"));
     assertEquals(2, formattingListener.occurrences("endpoint is connecting ..."));
     assertEquals(2, formattingListener.occurrences("endpoint is now connected"));
     assertEquals(2, formattingListener.occurrences("got a message: 'I am doing some work (0)'"));
