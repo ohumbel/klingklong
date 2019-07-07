@@ -3,6 +3,9 @@ package st.extreme.klingklong.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static st.extreme.klingklong.util.Temperature.COSY;
+import static st.extreme.klingklong.util.Temperature.FROZEN;
+import static st.extreme.klingklong.util.Temperature.HOT;
 
 import org.junit.Test;
 
@@ -10,28 +13,28 @@ public class TemperatureTest {
 
   @Test
   public void testTemperatureValueOf() {
-    assertEquals(Temperature.FROZEN, Temperature.valueOf("FROZEN"));
-    assertEquals(Temperature.COSY, Temperature.valueOf("COSY"));
-    assertEquals(Temperature.HOT, Temperature.valueOf("HOT"));
+    assertEquals(FROZEN, Temperature.valueOf("FROZEN"));
+    assertEquals(COSY, Temperature.valueOf("COSY"));
+    assertEquals(HOT, Temperature.valueOf("HOT"));
   }
 
   @Test
   public void testBelowOrEqualTo() {
-    assertTrue(Temperature.FROZEN.isBelowOrEqualTo(Temperature.FROZEN));
-    assertTrue(Temperature.FROZEN.isBelowOrEqualTo(Temperature.COSY));
-    assertTrue(Temperature.FROZEN.isBelowOrEqualTo(Temperature.HOT));
+    assertTrue(FROZEN.isBelowOrEqualTo(FROZEN));
+    assertTrue(FROZEN.isBelowOrEqualTo(COSY));
+    assertTrue(FROZEN.isBelowOrEqualTo(HOT));
 
-    assertFalse(Temperature.COSY.isBelowOrEqualTo(Temperature.FROZEN));
-    assertTrue(Temperature.COSY.isBelowOrEqualTo(Temperature.COSY));
-    assertTrue(Temperature.COSY.isBelowOrEqualTo(Temperature.HOT));
+    assertFalse(COSY.isBelowOrEqualTo(FROZEN));
+    assertTrue(COSY.isBelowOrEqualTo(COSY));
+    assertTrue(COSY.isBelowOrEqualTo(HOT));
 
-    assertFalse(Temperature.HOT.isBelowOrEqualTo(Temperature.FROZEN));
-    assertFalse(Temperature.HOT.isBelowOrEqualTo(Temperature.COSY));
-    assertTrue(Temperature.HOT.isBelowOrEqualTo(Temperature.HOT));
+    assertFalse(HOT.isBelowOrEqualTo(FROZEN));
+    assertFalse(HOT.isBelowOrEqualTo(COSY));
+    assertTrue(HOT.isBelowOrEqualTo(HOT));
 
-    assertFalse(Temperature.FROZEN.isBelowOrEqualTo(null));
-    assertFalse(Temperature.COSY.isBelowOrEqualTo(null));
-    assertFalse(Temperature.HOT.isBelowOrEqualTo(null));
+    assertFalse(FROZEN.isBelowOrEqualTo(null));
+    assertFalse(COSY.isBelowOrEqualTo(null));
+    assertFalse(HOT.isBelowOrEqualTo(null));
   }
 
 }

@@ -1,8 +1,9 @@
 package st.extreme.klingklong;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static st.extreme.klingklong.util.PropertyLoader.TEMPERATURE_PROPERTY_NAME;
+import static st.extreme.klingklong.util.Temperature.HOT;
 
 import java.io.File;
 import java.net.URL;
@@ -18,7 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import st.extreme.klingklong.util.Horn;
-import st.extreme.klingklong.util.Temperature;
+import st.extreme.klingklong.util.PropertyLoader;
 
 /**
  * Test a real life situation: start up two virtual machines and let them talk to each other
@@ -41,7 +42,7 @@ public class IntegralTest {
   @Before
   public void setUp() throws Exception {
     // determine class path elements for the subprocesses
-    URL propertiesURL = Horn.class.getResource("/klingklong.properties");
+    URL propertiesURL = Horn.class.getResource("/".concat(PropertyLoader.BUILTIN_PROPERTY_FILE_NAME));
     assertNotNull(propertiesURL);
     Path propertiesPath = Paths.get(propertiesURL.toURI());
     Path parentPath = propertiesPath.getParent();
@@ -94,7 +95,7 @@ public class IntegralTest {
     ProcessBuilder processBuilder = new ProcessBuilder();
     processBuilder.redirectOutput(processConfig.getOutputPath().toFile());
     processBuilder.redirectErrorStream(true);
-    String temperatureProperty = "-D".concat(Horn.TEMPERATURE_PROPERTY_NAME).concat("=").concat(Temperature.HOT.name());
+    String temperatureProperty = "-D".concat(TEMPERATURE_PROPERTY_NAME).concat("=").concat(HOT.name());
     String classpath = resourcesPath.toString().concat(File.pathSeparator) //
         .concat(mainPath.toString()).concat(File.pathSeparator) //
         .concat(testPath.toString());
@@ -102,16 +103,13 @@ public class IntegralTest {
     return processBuilder;
   }
 
+  // TODO: handle the current case
   private void assertOutput(Path outputPath, Set<String> messagesAtLeastOnce) throws Exception {
     String line;
     List<String> lines = Files.readAllLines(outputPath);
     assertTrue("expected at least 11 lines, but only got " + lines.size() + ":\n" + lines, lines.size() >= 11);
 
     int index = 0;
-    line = lines.get(index);
-    assertTrue(line.contains("starting worker on JVM"));
-
-    index++;
     line = lines.get(index);
     assertTrue(line.contains("creating kling") || line.contains("creating klong"));
     index++;
@@ -144,49 +142,70 @@ public class IntegralTest {
     line = lines.get(index);
     assertTrue(line.contains("got a message: 'I am doing some work (3)'"));
 
-    index++;
-    line = lines.get(index);
-    if (line.contains(DONE_SOON_MESSAGE)) {
-      messagesAtLeastOnce.add(DONE_SOON_MESSAGE);
-      index++;
-    }
+    // possible output 1 afer work:
+    // [klingklong] got a message: 'My work is done soon'
+    // [klingklong] got a message: 'STOP'
+    // [klingklong] receiver got STOP signal
+    // [klingklong] receiver thread is terminating now
+    // [klingklong] endpoint is closing
+    // [klingklong] sender thread is terminating now
+    // [klingklong] endpoint is now closed
 
-    line = lines.get(index);
-    if (line.contains(STOP_MESSAGE)) {
-      messagesAtLeastOnce.add(STOP_MESSAGE);
-      index++;
-    }
+    // possible output 2 after work:
+    // [klingklong] endpoint is closing
+    // [klingklong] sender thread is terminating now
+    // [klingklong] receiver got STOP signal
+    // [klingklong] receiver thread is terminating now
+    // [klingklong] endpoint is now closed
 
+    // equired messages are:
+    // - endpoint is closing
+    // - receiver got STOP signal
+    // - sender thread is terminating now
+    // - receiver thread is terminating now
+    // but the sequence cannot be predicted
+    // and at the last position:
+    // - endpoint is now closed
+
+    boolean closing = false;
     boolean senderTerminates = false;
     boolean receiverTerminates = false;
+    boolean gotStopSignal = false;
 
-    line = lines.get(index);
-    assertTrue(line.endsWith("thread is terminating now"));
-    if (line.contains("sender")) {
-      senderTerminates = true;
-    }
-    if (line.contains("receiver")) {
-      receiverTerminates = true;
+    while (index < lines.size() - 2) {
+      index++;
+      line = lines.get(index);
+      if (line.contains(DONE_SOON_MESSAGE)) {
+        messagesAtLeastOnce.add(DONE_SOON_MESSAGE);
+      }
+      if (line.contains(STOP_MESSAGE)) {
+        messagesAtLeastOnce.add(STOP_MESSAGE);
+      }
+      if (line.contains("endpoint is closing")) {
+        closing = true;
+      }
+      if (line.contains("receiver got STOP signal")) {
+        gotStopSignal = true;
+      }
+      if (line.contains("thread is terminating now")) {
+        if (line.contains("sender")) {
+          senderTerminates = true;
+        }
+        if (line.contains("receiver")) {
+          receiverTerminates = true;
+        }
+      }
     }
 
-    index++;
-    line = lines.get(index);
-    assertTrue(line.endsWith("thread is terminating now"));
-    if (line.contains("sender")) {
-      senderTerminates = true;
-    }
-    if (line.contains("receiver")) {
-      receiverTerminates = true;
-    }
-
+    assertTrue("no closing message found", closing);
+    assertTrue("receiver got no STOP signal", gotStopSignal);
     assertTrue("no sender terminating message found", senderTerminates);
     assertTrue("no receiver terminating message found", receiverTerminates);
 
+    // this always should be the last one
     index++;
     line = lines.get(index);
     assertTrue(line.endsWith("endpoint is now closed"));
-
-    assertEquals("expected no more lines", lines.size(), index + 1);
   }
 
   private enum ProcessConfig {

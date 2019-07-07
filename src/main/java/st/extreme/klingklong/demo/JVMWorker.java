@@ -51,11 +51,11 @@ public class JVMWorker implements MessageListener {
       if (isRemoteListening.get()) {
         endpoint.send("My work is done soon");
       }
-      TimeUnit.SECONDS.sleep(1);
+      TimeUnit.SECONDS.sleep(2);
       if (isRemoteListening.get()) {
         endpoint.send(STOP_MESSAGE);
       }
-      TimeUnit.MILLISECONDS.sleep(500);
+      TimeUnit.SECONDS.sleep(1);
     }
   }
 
@@ -63,11 +63,11 @@ public class JVMWorker implements MessageListener {
     final Endpoint endpoint;
     switch (type) {
     case KLING:
-      honk(COSY, "creating kling");
+      honk(COSY, "creating kling for JVM worker");
       endpoint = Kling.create();
       break;
     case KLONG:
-      honk(COSY, "creating klong");
+      honk(COSY, "creating klong for JVM worker");
       endpoint = Klong.create();
       break;
     default:
@@ -78,12 +78,7 @@ public class JVMWorker implements MessageListener {
 
   private void workOneUnit() throws InterruptedException {
     workCount.incrementAndGet();
-    double rand = Math.random();
-    if (rand <= 0.5) {
-      TimeUnit.SECONDS.sleep(1);
-    } else {
-      TimeUnit.SECONDS.sleep(2);
-    }
+    TimeUnit.SECONDS.sleep(1);
   }
 
 }

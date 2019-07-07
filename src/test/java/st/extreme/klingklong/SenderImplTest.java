@@ -1,6 +1,8 @@
 package st.extreme.klingklong;
 
 import static org.junit.Assert.assertTrue;
+import static st.extreme.klingklong.util.PropertyLoader.TEMPERATURE_PROPERTY_NAME;
+import static st.extreme.klingklong.util.Temperature.HOT;
 
 import java.net.InetAddress;
 import java.util.concurrent.Semaphore;
@@ -10,9 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import st.extreme.klingklong.util.Horn;
 import st.extreme.klingklong.util.HornFormatter;
-import st.extreme.klingklong.util.Temperature;
 import st.extreme.klingklong.util.TestFormattingListener;
 
 public class SenderImplTest {
@@ -22,15 +22,19 @@ public class SenderImplTest {
 
   @Before
   public void setUp() {
-    originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name());
-    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
+    originalTemeratureProperty = System.getProperty(TEMPERATURE_PROPERTY_NAME);
+    System.setProperty(TEMPERATURE_PROPERTY_NAME, HOT.name());
     formattingListener = new TestFormattingListener();
     HornFormatter.addFormattingListener(formattingListener);
   }
 
   @After
   public void tearDown() {
-    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
+    if (originalTemeratureProperty == null) {
+      System.getProperties().remove(TEMPERATURE_PROPERTY_NAME);
+    } else {
+      System.setProperty(TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
+    }
     HornFormatter.removeAllListeners();
   }
 

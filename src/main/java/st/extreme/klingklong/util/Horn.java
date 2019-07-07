@@ -1,14 +1,11 @@
 package st.extreme.klingklong.util;
 
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.Set;
+import static st.extreme.klingklong.util.PropertyLoader.TEMPERATURE_PROPERTY_NAME;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class Horn {
-
-  public static final String TEMPERATURE_PROPERTY_NAME = "klingklong.horn.temperature";
 
   private static final Logger LOGGER;
 
@@ -16,7 +13,7 @@ public final class Horn {
     LOGGER = Logger.getLogger(Horn.class.getName());
     // set our formatter on the console handler of the root logger
     Logger.getLogger("").getHandlers()[0].setFormatter(new HornFormatter());
-    loadProperties();
+    PropertyLoader.loadProperties();
   }
 
   public static void honk(Temperature temperature, String message) {
@@ -36,21 +33,6 @@ public final class Horn {
         // no logging at all if frozen
         break;
       }
-    }
-  }
-
-  static void loadProperties() {
-    Properties properties = new Properties();
-    try (InputStream propertiesStream = Horn.class.getResourceAsStream("/klingklong.properties")) {
-      properties.load(propertiesStream);
-    } catch (Exception e) {
-      honk(Temperature.HOT, "unable to load klinklong.properties", e);
-    }
-
-    Set<Object> keys = properties.keySet();
-    for (Object object : keys) {
-      String key = (String) object;
-      System.setProperty(key, properties.getProperty(key));
     }
   }
 
