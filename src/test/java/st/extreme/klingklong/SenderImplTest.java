@@ -10,8 +10,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import st.extreme.klingklong.util.Horn;
 import st.extreme.klingklong.util.HornFormatter;
+import st.extreme.klingklong.util.PropertyLoader;
 import st.extreme.klingklong.util.Temperature;
 import st.extreme.klingklong.util.TestFormattingListener;
 
@@ -22,8 +22,8 @@ public class SenderImplTest {
 
   @Before
   public void setUp() {
-    originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME);
-    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
+    originalTemeratureProperty = System.getProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME);
+    System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
     formattingListener = new TestFormattingListener();
     HornFormatter.addFormattingListener(formattingListener);
   }
@@ -31,9 +31,9 @@ public class SenderImplTest {
   @After
   public void tearDown() {
     if (originalTemeratureProperty == null) {
-      System.getProperties().remove(Horn.TEMPERATURE_PROPERTY_NAME);
+      System.getProperties().remove(PropertyLoader.TEMPERATURE_PROPERTY_NAME);
     } else {
-      System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
+      System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
     }
     HornFormatter.removeAllListeners();
   }

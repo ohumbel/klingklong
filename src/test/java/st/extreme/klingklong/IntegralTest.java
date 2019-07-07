@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import st.extreme.klingklong.util.Horn;
+import st.extreme.klingklong.util.PropertyLoader;
 import st.extreme.klingklong.util.Temperature;
 
 /**
@@ -93,7 +94,7 @@ public class IntegralTest {
     ProcessBuilder processBuilder = new ProcessBuilder();
     processBuilder.redirectOutput(processConfig.getOutputPath().toFile());
     processBuilder.redirectErrorStream(true);
-    String temperatureProperty = "-D".concat(Horn.TEMPERATURE_PROPERTY_NAME).concat("=").concat(Temperature.HOT.name());
+    String temperatureProperty = "-D".concat(PropertyLoader.TEMPERATURE_PROPERTY_NAME).concat("=").concat(Temperature.HOT.name());
     String classpath = resourcesPath.toString().concat(File.pathSeparator) //
         .concat(mainPath.toString()).concat(File.pathSeparator) //
         .concat(testPath.toString());

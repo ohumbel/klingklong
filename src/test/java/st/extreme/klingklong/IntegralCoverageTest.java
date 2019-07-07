@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import st.extreme.klingklong.demo.JVM1;
 import st.extreme.klingklong.demo.JVM2;
-import st.extreme.klingklong.util.Horn;
 import st.extreme.klingklong.util.HornFormatter;
+import st.extreme.klingklong.util.PropertyLoader;
 import st.extreme.klingklong.util.Temperature;
 import st.extreme.klingklong.util.TestFormattingListener;
 
@@ -29,7 +29,7 @@ public class IntegralCoverageTest {
 
   @Before
   public void setUp() {
-    originalTemeratureProperty = System.getProperty(Horn.TEMPERATURE_PROPERTY_NAME);
+    originalTemeratureProperty = System.getProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME);
     formattingListener = new TestFormattingListener();
     HornFormatter.addFormattingListener(formattingListener);
   }
@@ -37,16 +37,16 @@ public class IntegralCoverageTest {
   @After
   public void tearDown() {
     if (originalTemeratureProperty == null) {
-      System.getProperties().remove(Horn.TEMPERATURE_PROPERTY_NAME);
+      System.getProperties().remove(PropertyLoader.TEMPERATURE_PROPERTY_NAME);
     } else {
-      System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
+      System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, originalTemeratureProperty);
     }
     HornFormatter.removeAllListeners();
   }
 
   @Test
   public void testTowEndpoints() throws InterruptedException {
-    System.setProperty(Horn.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
+    System.setProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.HOT.name());
     WorkerThread1 workerThread1 = new WorkerThread1();
     WorkerThread2 workerThread2 = new WorkerThread2();
     workerThread1.start();

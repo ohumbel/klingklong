@@ -1,14 +1,9 @@
 package st.extreme.klingklong.util;
 
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class Horn {
-
-  public static final String TEMPERATURE_PROPERTY_NAME = "st.extreme.klingklong.horn.temperature";
 
   private static final Logger LOGGER;
 
@@ -16,7 +11,6 @@ public final class Horn {
     LOGGER = Logger.getLogger(Horn.class.getName());
     // set our formatter on the console handler of the root logger
     Logger.getLogger("").getHandlers()[0].setFormatter(new HornFormatter());
-    loadProperties();
   }
 
   public static void honk(Temperature temperature, String message) {
@@ -39,31 +33,8 @@ public final class Horn {
     }
   }
 
-  static void loadProperties() {
-    Properties properties = new Properties();
-    try (InputStream propertiesStream = Horn.class.getResourceAsStream("/klingklong.properties")) {
-      properties.load(propertiesStream);
-    } catch (Exception e) {
-      honk(Temperature.HOT, "unable to load klinklong.properties", e);
-    }
-
-    Set<Object> keys = properties.keySet();
-    for (Object object : keys) {
-      String key = (String) object;
-      setSystemProperty(key, properties.getProperty(key));
-    }
-  }
-
-  static void setSystemProperty(String propertyName, String propertyValue) {
-    // if the system property is already set, do not overwrite it
-    String actualValue = System.getProperty(propertyName);
-    if (actualValue == null) {
-      System.setProperty(propertyName, propertyValue);
-    }
-  }
-
   static Temperature systemTemperature() {
-    return Temperature.valueOf(System.getProperty(TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name()));
+    return Temperature.valueOf(System.getProperty(PropertyLoader.TEMPERATURE_PROPERTY_NAME, Temperature.FROZEN.name()));
   }
 
   private static void internalLog(Level level, String message, Throwable throwable) {
